@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Demo Scenarios - SentinelPay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#10b981",
+                        "on-surface-variant": "#bbcabf",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-primary-container": "#00422b",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-container-high": "#282a2a",
+                        "outline": "#86948a",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#4edea3",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-highest": "#333535",
+                        "primary-fixed-dim": "#4edea3",
+                        "surface-container": "#1e2020",
+                        "surface": "#121414",
+                        "outline-variant": "#3c4a42",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-surface": "#e2e2e2",
+                        "background": "#121414",
+                        "surface-container-low": "#1a1c1c",
+                        "surface-variant": "#333535",
+                        "on-primary-fixed-variant": "#005236",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-container": "#523200",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#002113",
+                        "on-secondary-fixed": "#07006c",
+                        "on-secondary": "#1000a9",
+                        "tertiary": "#ffb95f",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "primary": "#4edea3",
+                        "on-primary": "#003824",
+                        "on-error": "#690005",
+                        "secondary": "#c0c1ff",
+                        "secondary-container": "#3131c0",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-tertiary": "#472a00",
+                        "surface-bright": "#383939",
+                        "inverse-on-surface": "#2f3130",
+                        "surface-dim": "#121414",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-fixed": "#6ffbbe",
+                        "inverse-primary": "#006c49",
+                        "surface-container-lowest": "#0c0f0e",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#e29100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "48px",
+                        "unit": "8px",
+                        "margin-mobile": "24px"
+                    },
+                    "fontFamily": {
+                        "number-data": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "number-data": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(78, 222, 163, 0.2);
+        }
+        
+        .demo-badge-pulse {
+            animation: pulse-badge 2s infinite;
+        }
+        
+        @keyframes pulse-badge {
+            0% { box-shadow: 0 0 0 0 rgba(255, 180, 171, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(255, 180, 171, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 180, 171, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-lg">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full z-40 bg-surface/80 backdrop-blur-xl dark:bg-surface/80 border-b border-white/10 sticky top-0">
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">replace_audio</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim tracking-tight">SentinelPay</h1>
+</div>
+<div class="flex items-center gap-stack-md">
+<!-- Persistent Demo Mode Badge -->
+<div class="flex items-center gap-1.5 bg-error-container/20 border border-error/30 rounded-full px-3 py-1 demo-badge-pulse">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="font-label-caps text-label-caps text-error">DEMO MODE</span>
+</div>
+<button class="hover:opacity-80 transition-opacity scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface dark:text-on-surface">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow px-margin-mobile py-stack-lg max-w-4xl mx-auto w-full pb-32">
+<div class="mb-stack-lg text-center md:text-left">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-stack-sm">Try Sentinel AI</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Experience how Sentinel AI analyzes risks in real-time. Select a scenario below to see the invisible guardian in action.
+            </p>
+</div>
+<!-- Bento Grid / Scenario Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Scenario 1: Fake QR Code -->
+<button class="glass-panel rounded-xl p-stack-md flex flex-col items-start text-left hover:bg-surface-container-high transition-colors group relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-error/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="w-12 h-12 rounded-full bg-error-container/20 flex items-center justify-center mb-stack-sm border border-error/30 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-error">qr_code_scanner</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-1">Fake QR Code</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Detect tampered merchant QR codes masking malicious intents.</p>
+</button>
+<!-- Scenario 2: Impersonation Scam -->
+<button class="glass-panel rounded-xl p-stack-md flex flex-col items-start text-left hover:bg-surface-container-high transition-colors group relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-stack-sm border border-tertiary/30 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-tertiary">person_alert</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-1">Impersonation Scam</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Identify unusual requests from known contacts exhibiting strange behavior.</p>
+</button>
+<!-- Scenario 3: Suspicious Amount -->
+<button class="glass-panel rounded-xl p-stack-md flex flex-col items-start text-left hover:bg-surface-container-high transition-colors group relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-stack-sm border border-tertiary/30 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-tertiary">payments</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-1">Suspicious Amount</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Flag transactions that deviate significantly from typical spending patterns.</p>
+</button>
+<!-- Scenario 4: Safe Merchant -->
+<button class="glass-panel rounded-xl p-stack-md flex flex-col items-start text-left hover:bg-surface-container-high transition-colors group relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center mb-stack-sm border border-primary/30 group-hover:scale-110 transition-transform duration-300 ai-glow">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-1">Safe Merchant</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">See how Sentinel approves verified, low-risk transactions seamlessly.</p>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-2 pb-safe bg-surface-container/60 backdrop-blur-3xl dark:bg-surface-container/60 rounded-t-xl shadow-lg border-t border-white/10 md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container/20 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1 hover:bg-surface-variant/30 spring-bounce transition-transform duration-300" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300" href="#">
+<span class="material-symbols-outlined mb-1">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300" href="#">
+<span class="material-symbols-outlined mb-1">history</span>
+<span class="font-label-caps text-label-caps">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+</body></html>

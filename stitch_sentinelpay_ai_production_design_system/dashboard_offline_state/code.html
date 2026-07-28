@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SentinelPay AI - Offline Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#3c4a42",
+                        "surface-bright": "#383939",
+                        "surface-container-highest": "#333535",
+                        "on-primary-fixed-variant": "#005236",
+                        "surface-dim": "#121414",
+                        "secondary-fixed": "#e1e0ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-primary-fixed": "#002113",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-error": "#690005",
+                        "surface-container-high": "#282a2a",
+                        "on-primary-container": "#00422b",
+                        "primary-container": "#10b981",
+                        "secondary": "#c0c1ff",
+                        "inverse-surface": "#e2e2e2",
+                        "background": "#121414",
+                        "tertiary-container": "#e29100",
+                        "on-surface-variant": "#bbcabf",
+                        "on-primary": "#003824",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "error-container": "#93000a",
+                        "surface-variant": "#333535",
+                        "on-secondary-container": "#b0b2ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-container": "#523200",
+                        "surface-container-lowest": "#0c0f0e",
+                        "surface-container-low": "#1a1c1c",
+                        "secondary-container": "#3131c0",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#121414",
+                        "tertiary": "#ffb95f",
+                        "on-secondary": "#1000a9",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#4edea3",
+                        "on-secondary-fixed": "#07006c",
+                        "primary": "#4edea3",
+                        "on-tertiary": "#472a00",
+                        "inverse-primary": "#006c49",
+                        "primary-fixed": "#6ffbbe",
+                        "on-surface": "#e2e2e2",
+                        "error": "#ffb4ab",
+                        "outline": "#86948a",
+                        "inverse-on-surface": "#2f3130",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-container": "#1e2020"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "margin-mobile": "24px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "number-data": ["Inter"],
+                        "title-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "number-data": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glow-effect { box-shadow: 0 0 15px rgba(78, 222, 163, 0.2); }
+        .glow-warning { box-shadow: 0 0 15px rgba(226, 145, 0, 0.2); }
+        
+        /* Spring animation placeholder */
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0; }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-background/80 backdrop-blur-xl border-b border-white/10">
+<div class="flex items-center gap-gutter">
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden border border-outline/30 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a sleek, futuristic biometric iris scanner interface glowing softly with intricate digital patterns inside a dark high-tech security compound. Deep blacks, glowing primary green, and crisp white highlights dominate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjiZToHg0fIepYO8OY3q8Rd3fQ6RhgRiDGnBxShiOkj_oee3r9inh2p5nCT1W1-PJN6I5G8e53BJ5gmEJwR2pY5zUlXU2ImQjpVi8gAUAbrX9CwNtjIf86e8rC4C9_CxKr9sG3bLeU3QCpJO3VR3HW06ktI7EhDf4VM1bgVl7SfmbWzBMZVFfngqRNlhrjRE8OXF2HMiIFg7Hpa5-sHlktWzlSS3T9kOEYQNE1M0VmgrZLNTnzhVzP"/>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight" style="font-size: 24px; line-height: 28px;">SentinelPay AI</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Offline Banner -->
+<div class="fixed top-16 w-full z-40 px-margin-mobile py-unit mt-unit">
+<div class="glass-panel rounded-lg p-unit flex items-center gap-unit bg-tertiary-container/10 border-tertiary-container/30 glow-warning animate-pop">
+<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 1;">wifi_off</span>
+<p class="font-body-sm text-body-sm text-on-surface">You're offline — protection still works, community data may be outdated.</p>
+</div>
+</div>
+<!-- Main Content Canvas -->
+<main class="flex-1 pt-32 pb-32 px-margin-mobile flex flex-col gap-stack-lg max-w-4xl mx-auto w-full">
+<!-- On-Device Status -->
+<section class="glass-panel rounded-xl p-gutter flex flex-col items-center justify-center text-center relative overflow-hidden animate-pop" style="animation-delay: 0.1s;">
+<!-- Decorative AI rings -->
+<div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+<div class="w-48 h-48 rounded-full border border-primary animate-[spin_10s_linear_infinite]"></div>
+<div class="w-32 h-32 rounded-full border border-primary animate-[spin_8s_linear_infinite_reverse] absolute"></div>
+</div>
+<span class="material-symbols-outlined text-primary mb-unit" style="font-size: 48px; font-variation-settings: 'FILL' 1;">shield</span>
+<h2 class="font-title-md text-title-md text-on-surface mb-unit">On-Device Engine Active</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">Local ML models are currently analyzing merchants and transactions without network access.</p>
+</section>
+<!-- Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Recent Scan -->
+<div class="glass-panel rounded-xl p-gutter flex flex-col gap-stack-sm animate-pop" style="animation-delay: 0.2s;">
+<div class="flex justify-between items-start">
+<h3 class="font-body-lg text-body-lg text-on-surface">Last Local Scan</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant">2M AGO</span>
+</div>
+<div class="bg-primary/10 border border-primary/30 rounded-lg p-unit mt-unit flex items-center gap-unit">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface font-semibold">Coffee Haven</p>
+<p class="font-label-caps text-label-caps text-primary">SAFE MERCHANT</p>
+</div>
+</div>
+<div class="mt-auto pt-stack-sm flex gap-2 flex-wrap">
+<span class="px-2 py-1 rounded border border-white/10 font-label-caps text-[10px] text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> MATCHES GPS</span>
+<span class="px-2 py-1 rounded border border-white/10 font-label-caps text-[10px] text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">history</span> KNOWN DEVICE</span>
+</div>
+</div>
+<!-- Risk Engine Status -->
+<div class="glass-panel rounded-xl p-gutter flex flex-col gap-stack-sm animate-pop" style="animation-delay: 0.3s;">
+<div class="flex justify-between items-start">
+<h3 class="font-body-lg text-body-lg text-on-surface">Risk Parameters</h3>
+<span class="material-symbols-outlined text-on-surface-variant">tune</span>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-stack-md mt-unit">
+<div>
+<div class="flex justify-between font-label-caps text-label-caps text-on-surface-variant mb-1">
+<span>Local Fraud Patterns</span>
+<span class="text-primary">100% Loaded</span>
+</div>
+<div class="h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-caps text-label-caps text-on-surface-variant mb-1">
+<span>Community Updates</span>
+<span class="text-tertiary">Pending Sync</span>
+</div>
+<div class="h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-3/4 opacity-50 relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Area -->
+<section class="mt-auto pt-stack-lg animate-pop" style="animation-delay: 0.4s;">
+<button class="w-full h-14 rounded-lg bg-surface-container border-2 border-primary text-primary font-title-md flex items-center justify-center gap-unit hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+                Scan Offline QR
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-margin-mobile pb-safe h-20 bg-surface-container-lowest/80 backdrop-blur-2xl rounded-t-xl border-t border-white/10 shadow-lg md:hidden">
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:bg-white/5 transition-colors w-16 h-full Active: scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-full" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps mt-1">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-full" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-caps text-label-caps mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-full" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps mt-1">Settings</span>
+</a>
+</nav>
+<!-- Desktop Nav Fallback (Hidden on Mobile) -->
+<nav class="hidden md:flex fixed top-0 left-1/2 -translate-x-1/2 z-[51] h-16 items-center gap-stack-lg text-body-sm font-semibold">
+<a class="text-primary border-b-2 border-primary py-1" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors py-1" href="#">Scan</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors py-1" href="#">History</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors py-1" href="#">Settings</a>
+</nav>
+</body></html>

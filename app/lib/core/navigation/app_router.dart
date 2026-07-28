@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../features/splash/splash_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/sms_permission/sms_permission_screen.dart';
+import '../../features/parse_progress/parse_progress_screen.dart';
+import '../../features/parse_progress/parsed_review_screen.dart';
+import '../../features/onboarding/mode_choice_screen.dart';
+import '../../features/analysis/handoff_screen.dart';
+import '../../features/analysis/payment_outcome_screen.dart';
+import '../../features/dashboard/dashboard_screen.dart';
+import '../../features/scanner/scanner_screen.dart';
+import '../../features/analysis/analysis_screen.dart';
+import '../../features/transaction_detail/transaction_detail_screen.dart';
+import '../../features/history/history_screen.dart';
+import '../../features/settings/settings_screen.dart';
+
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/sms_permission',
+      builder: (context, state) => const SmsPermissionScreen(),
+    ),
+    GoRoute(
+      path: '/parse_progress',
+      builder: (context, state) => const ParseProgressScreen(),
+    ),
+    GoRoute(
+      path: '/parsed_review',
+      builder: (context, state) => const ParsedReviewScreen(),
+    ),
+    GoRoute(
+      path: '/mode_choice',
+      builder: (context, state) => const ModeChoiceScreen(),
+    ),
+    GoRoute(
+      path: '/handoff',
+      builder: (context, state) => const HandoffScreen(),
+    ),
+    GoRoute(
+      path: '/payment_outcome',
+      builder: (context, state) => const PaymentOutcomeScreen(),
+    ),
+    GoRoute(
+      path: '/dashboard',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const DashboardScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/scan',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const ScannerScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/analysis',
+      builder: (context, state) => const AnalysisScreen(),
+    ),
+    GoRoute(
+      path: '/transaction_detail',
+      builder: (context, state) => const TransactionDetailScreen(),
+    ),
+    GoRoute(
+      path: '/history',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const HistoryScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/settings',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const SettingsScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+  ],
+);

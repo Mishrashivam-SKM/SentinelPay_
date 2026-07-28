@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transaction Details - SentinelPay</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#10b981",
+                        "on-surface-variant": "#bbcabf",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-primary-container": "#00422b",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-container-high": "#282a2a",
+                        "outline": "#86948a",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#4edea3",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-highest": "#333535",
+                        "primary-fixed-dim": "#4edea3",
+                        "surface-container": "#1e2020",
+                        "surface": "#121414",
+                        "outline-variant": "#3c4a42",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-surface": "#e2e2e2",
+                        "background": "#121414",
+                        "surface-container-low": "#1a1c1c",
+                        "surface-variant": "#333535",
+                        "on-primary-fixed-variant": "#005236",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-container": "#523200",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#002113",
+                        "on-secondary-fixed": "#07006c",
+                        "on-secondary": "#1000a9",
+                        "tertiary": "#ffb95f",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "primary": "#4edea3",
+                        "on-primary": "#003824",
+                        "on-error": "#690005",
+                        "secondary": "#c0c1ff",
+                        "secondary-container": "#3131c0",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-tertiary": "#472a00",
+                        "surface-bright": "#383939",
+                        "inverse-on-surface": "#2f3130",
+                        "surface-dim": "#121414",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-fixed": "#6ffbbe",
+                        "inverse-primary": "#006c49",
+                        "surface-container-lowest": "#0c0f0e",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#e29100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "48px",
+                        "unit": "8px",
+                        "margin-mobile": "24px",
+                        "safe": "80px"
+                    },
+                    "fontFamily": {
+                        "number-data": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "number-data": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Progress Ring Animation */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        /* Glassmorphism base */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary/30">
+<!-- TopAppBar (Adapted for Detail Screen) -->
+<nav class="bg-surface/80 backdrop-blur-xl dark:bg-surface/80 border-b border-white/10 flex justify-between items-center px-margin-mobile h-16 w-full z-40 fixed top-0 left-0">
+<button class="text-on-surface hover:opacity-80 transition-opacity p-2 -ml-2 rounded-full active:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-title-md text-title-md font-bold text-on-surface">Transaction Details</h1>
+<div class="w-10"></div> <!-- Spacer for flex balance -->
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile pb-safe flex flex-col gap-stack-lg max-w-2xl mx-auto w-full">
+<!-- Header Card: Payee & Amount -->
+<section class="glass-panel rounded-xl p-stack-md flex flex-col items-center justify-center text-center relative overflow-hidden">
+<!-- Subtle gradient orb in background -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+<div class="w-16 h-16 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center mb-stack-sm overflow-hidden">
+<img class="w-full h-full object-cover opacity-80" data-alt="A macro shot of a sleek, modern coffee cup logo illuminated by soft, cinematic neon green lighting in a dark, high-end cafe environment. The image is moody, futuristic, and highly detailed, emphasizing glossy textures and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzP6TAfRGjX9zKRjB2FwjhaSNpl1L0exuTrp1PBmYDbHEOF-N66EKHuY6zcZTL_KJGgl1S2IAZsGVPgWiXh7rJkzQctJC6QBQDI2l7eojcvJOalnHC05jBKVxcyk4AEElR9PKNlw0GmpU0xn8khIGvBubkOsXEU-9tTvWGHOqko4-p_KDgBBAoYgWGXuEJUfJSQRkzWXVmeSrxuxHkkK2Z5B2VeO2vTCGbCbbtTcPfa3EByH-yOuoo"/>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface mb-1">Starbucks</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md">Today, 10:42 AM</p>
+<div class="font-display-lg text-display-lg text-on-surface tracking-tight">
+                ₹850.00
+            </div>
+</section>
+<!-- Risk Verdict Badge & Confidence Ring -->
+<section class="bg-primary-container/10 border border-primary/20 rounded-lg p-stack-md flex items-center justify-between shadow-[0_0_15px_rgba(78,222,163,0.1)] relative overflow-hidden">
+<!-- Background highlight -->
+<div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
+<div class="flex items-center gap-stack-sm z-10">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="shield_person">shield_person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-primary tracking-wider">AI VERDICT</span>
+<span class="font-title-md text-title-md text-on-surface font-medium">Safe Transaction</span>
+</div>
+</div>
+<!-- 98% Confidence Ring -->
+<div class="relative w-14 h-14 z-10 flex items-center justify-center">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<!-- Background circle -->
+<circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<!-- Progress circle (98%) -->
+<circle class="text-primary stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="5.024" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="font-label-caps text-[10px] leading-tight text-primary">98%</span>
+</div>
+</div>
+</section>
+<!-- Evidence Recap Section -->
+<section class="flex flex-col gap-stack-sm">
+<h3 class="font-label-caps text-label-caps text-outline-variant mb-unit tracking-widest pl-unit">AI EVIDENCE LOG</h3>
+<div class="bg-surface-container-lowest border border-white/5 rounded-lg p-stack-sm flex items-center gap-stack-sm hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="check_circle">check_circle</span>
+<span class="font-body-lg text-body-lg text-on-surface">Known Merchant</span>
+</div>
+<div class="bg-surface-container-lowest border border-white/5 rounded-lg p-stack-sm flex items-center gap-stack-sm hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="monitoring">monitoring</span>
+<span class="font-body-lg text-body-lg text-on-surface">Typical Amount Range</span>
+</div>
+<div class="bg-surface-container-lowest border border-white/5 rounded-lg p-stack-sm flex items-center gap-stack-sm hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="verified_user">verified_user</span>
+<span class="font-body-lg text-body-lg text-on-surface">Verified VPA Profile</span>
+</div>
+</section>
+<!-- Metadata Section -->
+<section class="flex flex-col gap-stack-sm mt-stack-sm">
+<h3 class="font-label-caps text-label-caps text-outline-variant mb-unit tracking-widest pl-unit">TRANSACTION DETAILS</h3>
+<div class="glass-panel rounded-xl overflow-hidden divide-y divide-white/5">
+<div class="flex justify-between items-center p-stack-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Payment Method</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface text-sm" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-number-data text-number-data text-on-surface">Google Pay</span>
+</div>
+</div>
+<div class="flex justify-between items-center p-stack-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Transaction ID</span>
+<span class="font-number-data text-number-data text-on-surface tracking-wider">TRX-8839201A</span>
+</div>
+<div class="flex justify-between items-center p-stack-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant">User Outcome</span>
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-surface-container-high border border-white/10 font-body-sm text-body-sm text-on-surface">
+                        Self-Reported Safe
+                    </span>
+</div>
+</div>
+</section>
+<!-- Spacer for scrolling past bottom edge -->
+<div class="h-8 w-full"></div>
+</main>
+<script>
+        // Simple script to trigger the progress ring animation on load
+        document.addEventListener("DOMContentLoaded", () => {
+            const circle = document.querySelector('.progress-ring__circle');
+            if(circle) {
+                // Circumference is 2 * pi * r (approx 251.2 for r=40)
+                // 98% offset is (1 - 0.98) * 251.2 = 5.024
+                // We set it to full initially, then animate to target
+                circle.style.strokeDashoffset = '251.2';
+                setTimeout(() => {
+                    circle.style.strokeDashoffset = '5.024';
+                }, 100);
+            }
+        });
+    </script>
+</body></html>

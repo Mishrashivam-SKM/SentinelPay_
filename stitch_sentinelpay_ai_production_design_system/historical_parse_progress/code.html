@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SentinelPay - Historical Parse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#10b981",
+                    "on-surface-variant": "#bbcabf",
+                    "on-secondary-container": "#b0b2ff",
+                    "on-primary-container": "#00422b",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "inverse-surface": "#e2e2e2",
+                    "surface-container-high": "#282a2a",
+                    "outline": "#86948a",
+                    "on-background": "#e2e2e2",
+                    "surface-tint": "#4edea3",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-highest": "#333535",
+                    "primary-fixed-dim": "#4edea3",
+                    "surface-container": "#1e2020",
+                    "surface": "#121414",
+                    "outline-variant": "#3c4a42",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-surface": "#e2e2e2",
+                    "background": "#121414",
+                    "surface-container-low": "#1a1c1c",
+                    "surface-variant": "#333535",
+                    "on-primary-fixed-variant": "#005236",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-tertiary-container": "#523200",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#002113",
+                    "on-secondary-fixed": "#07006c",
+                    "on-secondary": "#1000a9",
+                    "tertiary": "#ffb95f",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "primary": "#4edea3",
+                    "on-primary": "#003824",
+                    "on-error": "#690005",
+                    "secondary": "#c0c1ff",
+                    "secondary-container": "#3131c0",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-tertiary": "#472a00",
+                    "surface-bright": "#383939",
+                    "inverse-on-surface": "#2f3130",
+                    "surface-dim": "#121414",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-fixed": "#6ffbbe",
+                    "inverse-primary": "#006c49",
+                    "surface-container-lowest": "#0c0f0e",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#e29100"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "margin-desktop": "48px",
+                    "unit": "8px",
+                    "margin-mobile": "24px"
+            },
+            "fontFamily": {
+                    "number-data": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "title-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "number-data": [
+                            "18px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        @keyframes scan-line {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(200px); opacity: 0; }
+        }
+        .ai-glow {
+            box-shadow: 0 0 30px rgba(78, 222, 163, 0.15), inset 0 0 20px rgba(78, 222, 163, 0.05);
+        }
+        .particle-ring {
+            animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #4edea3, #6ffbbe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-[#000000] text-on-background min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-body-lg">
+<!-- Background Elements -->
+<div class="absolute inset-0 pointer-events-none">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-md px-margin-mobile flex flex-col items-center justify-center z-10 relative">
+<!-- Header Text -->
+<div class="text-center mb-stack-lg space-y-stack-sm w-full">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Initializing Sentinel AI</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center max-w-[280px] mx-auto">
+                Building your secure financial profile from local message history.
+            </p>
+</div>
+<!-- Central Visualization -->
+<div class="relative w-64 h-64 flex items-center justify-center mb-stack-lg">
+<!-- Outer Glow Rings -->
+<div class="absolute inset-0 rounded-full border border-primary/20 ai-glow particle-ring"></div>
+<div class="absolute inset-4 rounded-full border border-primary/30 particle-ring" style="animation-delay: 0.5s;"></div>
+<div class="absolute inset-8 rounded-full border border-primary/40 particle-ring" style="animation-delay: 1s;"></div>
+<!-- Core Progress Circle -->
+<svg class="w-48 h-48 transform -rotate-90" viewbox="0 0 100 100">
+<!-- Background track -->
+<circle class="stroke-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke-width="4"></circle>
+<!-- Progress track -->
+<circle class="stroke-primary" cx="50" cy="50" fill="none" r="45" stroke-dasharray="283" stroke-dashoffset="100" stroke-linecap="round" stroke-width="4">
+<animate attributename="stroke-dashoffset" calcmode="spline" dur="4s" fill="freeze" from="283" keysplines="0.4 0 0.2 1" to="70"></animate>
+</circle>
+</svg>
+<!-- Center Data Point -->
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg text-display-lg text-on-surface" id="progress-percentage">75<span class="text-[24px]">%</span></span>
+<span class="font-label-caps text-label-caps text-primary mt-1 tracking-widest">SCANNING</span>
+</div>
+<!-- Scanning Line Effect -->
+<div class="absolute top-0 left-1/2 w-48 h-1 bg-primary blur-[2px] -translate-x-1/2 rounded-full" style="animation: scan-line 2s linear infinite;"></div>
+</div>
+<!-- Live Status Text Area -->
+<div class="w-full bg-surface-container-low/50 backdrop-blur-md rounded-xl border border-white/5 p-stack-md flex flex-col gap-stack-sm mb-stack-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] animate-pulse">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Found 47 payment messages...</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] animate-pulse">memory</span>
+<span class="font-body-sm text-body-sm text-on-surface">Analyzing patterns...</span>
+</div>
+<div class="flex items-center gap-3 opacity-50">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">shield_lock</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Building risk model...</span>
+</div>
+</div>
+<!-- Reassurance Footer -->
+<div class="flex items-center gap-2 mt-auto pb-safe pt-stack-lg">
+<span class="material-symbols-outlined text-outline text-[16px]">lock</span>
+<span class="font-body-sm text-body-sm text-outline">This never leaves your device</span>
+</div>
+</main>
+<script>
+        // Simple counter animation for the percentage
+        document.addEventListener('DOMContentLoaded', () => {
+            const percentageElement = document.getElementById('progress-percentage');
+            let current = 0;
+            const target = 75;
+            const duration = 3000;
+            const interval = 50;
+            const step = (target / (duration / interval));
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                percentageElement.innerHTML = `${Math.floor(current)}<span class="text-[24px]">%</span>`;
+            }, interval);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,62 @@
+name: sentinelpay_ai
+description: "SentinelPay AI — Your Personal UPI Safety Copilot"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # Database
+  sqflite: ^2.4.2
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+  # Typography
+  google_fonts: ^6.2.1
+
+  # Permissions (Android SMS)
+  permission_handler: ^11.4.0
+
+  # SMS Reading (Android)
+  # QR Code Scanning
+  mobile_scanner: ^7.4.0
+
+  # UI Utilities
+  flutter_animate: ^4.5.2
+  shimmer: ^3.0.0
+  percent_indicator: ^4.2.3
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  shared_preferences: ^2.4.0
+  flutter_sms_inbox: ^1.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  riverpod_generator: ^2.6.3
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

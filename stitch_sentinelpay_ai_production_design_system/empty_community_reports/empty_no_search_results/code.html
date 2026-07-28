@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transaction History - No Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#333535",
+                        "on-surface": "#e2e2e2",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-primary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-container": "#00422b",
+                        "surface-bright": "#383939",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "inverse-surface": "#e2e2e2",
+                        "surface": "#121414",
+                        "on-primary-fixed": "#002113",
+                        "surface-container-lowest": "#0c0f0e",
+                        "surface-container-high": "#282a2a",
+                        "outline-variant": "#3c4a42",
+                        "secondary": "#c0c1ff",
+                        "primary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#523200",
+                        "on-secondary-fixed": "#07006c",
+                        "background": "#121414",
+                        "tertiary": "#ffb95f",
+                        "on-primary": "#003824",
+                        "inverse-primary": "#006c49",
+                        "error-container": "#93000a",
+                        "primary-container": "#10b981",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-on-surface": "#2f3130",
+                        "secondary-container": "#3131c0",
+                        "on-secondary": "#1000a9",
+                        "surface-container": "#1e2020",
+                        "surface-variant": "#333535",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container-low": "#1a1c1c",
+                        "outline": "#86948a",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary": "#472a00",
+                        "on-background": "#e2e2e2",
+                        "on-surface-variant": "#bbcabf",
+                        "tertiary-container": "#e29100",
+                        "surface-tint": "#4edea3",
+                        "primary": "#4edea3",
+                        "surface-dim": "#121414",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "48px",
+                        "stack-md": "16px",
+                        "margin-mobile": "24px",
+                        "gutter": "16px",
+                        "safe": "env(safe-area-inset-bottom, 24px)"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "number-data": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "number-data": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom Utilities for strict AMOLED black and Glassmorphism */
+        body { background-color: #000000; } /* True AMOLED Black */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+        .ai-glow-subtle {
+            box-shadow: 0 0 40px -10px rgba(78, 222, 163, 0.15);
+        }
+    </style>
+</head>
+<body class="text-on-surface font-sans h-screen flex flex-col overflow-hidden selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 flex justify-between items-center px-margin-mobile h-16 w-full z-40 bg-surface/80 backdrop-blur-xl border-b border-white/10">
+<div class="flex items-center gap-3 hover:opacity-80 transition-opacity scale-95 duration-200">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10 shrink-0">
+<img alt="user_profile_picture" class="w-full h-full object-cover" data-alt="A macro shot of a sleek, abstract metallic sphere glowing faintly with emerald green light in a pitch-black environment, representing a secure user avatar profile in a high-tech interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Lj5C5mnXhDl-2CtzK9iSEE8iPkZucq7w1DNN5TTuQaQ099D2ii_Rr29-aTG4Oyq1mudWw2S5jnSCgDUyYYGaNHM9Rcos9YCMElhZjv38jti14rdIcvSjRQPpkA5Z9BU-_D2Ua-ZQrL1C8aQaFzXRiokV5Xh7Tjv5bh95R72zYJr2cCfzSixshg5FzJ4ZKQGnEUFqSUdkynUaiiWADFVBw3M9At-O6thefOzIIDGmwCJcKBFvjP5d"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim tracking-tight">SentinelPay</h1>
+</div>
+<button aria-label="Notifications" class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col pt-16 pb-24 relative overflow-hidden">
+<!-- Persistent Search Bar -->
+<div class="px-margin-mobile pt-stack-md pb-stack-sm z-20">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="w-full glass-panel border border-outline-variant rounded-full py-3 pl-12 pr-10 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-outline-variant" placeholder="Search merchant, amount, or date..." type="text" value="Coffee Shop 123"/>
+<button class="absolute inset-y-0 right-0 pr-4 flex items-center opacity-60 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">cancel</span>
+</button>
+</div>
+<!-- Filter Chips (Static for context) -->
+<div class="flex gap-2 mt-stack-sm overflow-x-auto pb-2 scrollbar-hide snap-x">
+<button class="snap-start shrink-0 px-4 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider hover:bg-white/5 transition-colors">Date</button>
+<button class="snap-start shrink-0 px-4 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider hover:bg-white/5 transition-colors">Status</button>
+<button class="snap-start shrink-0 px-4 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider hover:bg-white/5 transition-colors">Amount</button>
+</div>
+</div>
+<!-- Empty State Canvas -->
+<div class="flex-1 flex flex-col items-center justify-center px-margin-mobile text-center -mt-8 z-10 relative">
+<!-- Abstract Background Element (AI Scanning motif) -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20">
+<div class="w-[300px] h-[300px] rounded-full border border-primary/10 border-dashed animate-[spin_60s_linear_infinite]"></div>
+<div class="absolute w-[200px] h-[200px] rounded-full border border-primary/20 border-dashed animate-[spin_40s_linear_infinite_reverse]"></div>
+</div>
+<!-- Illustration Pattern (Zeroed lines / Search off) -->
+<div class="relative w-32 h-32 mb-stack-lg flex items-center justify-center ai-glow-subtle">
+<!-- Concentric rings representing the 'AI Guardian' eye searching -->
+<div class="absolute inset-0 rounded-full border-2 border-surface-container-highest"></div>
+<div class="absolute inset-2 rounded-full border border-outline-variant/30"></div>
+<!-- Main Icon Area -->
+<div class="relative z-10 w-20 h-20 rounded-full bg-surface-container-lowest glass-panel flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-[48px] opacity-80" style="font-variation-settings: 'wght' 200;">search_off</span>
+</div>
+</div>
+<!-- Text Content -->
+<h2 class="font-title-md text-title-md text-on-surface mb-stack-sm tracking-tight">No matches found</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-[280px] mx-auto leading-relaxed">
+                We couldn't find any transactions for that search. Try a different merchant name or amount.
+            </p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-2 pb-safe bg-surface-container/60 backdrop-blur-3xl border-t border-white/10 shadow-lg rounded-t-xl">
+<!-- Inactive: Home -->
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 py-1 rounded-lg">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</button>
+<!-- Inactive: Scan -->
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 py-1 rounded-lg">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps">Scan</span>
+</button>
+<!-- Active: History -->
+<button class="flex flex-col items-center justify-center bg-primary-container/20 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1 spring-bounce transition-transform duration-300">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-caps text-label-caps">History</span>
+</button>
+<!-- Inactive: Settings -->
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 py-1 rounded-lg">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</button>
+</nav>
+<style>
+        /* Hide scrollbar for clean horizontal scrolling */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

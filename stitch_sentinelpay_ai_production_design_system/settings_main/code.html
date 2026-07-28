@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - SentinelPay AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#3c4a42",
+                      "surface-bright": "#383939",
+                      "surface-container-highest": "#333535",
+                      "on-primary-fixed-variant": "#005236",
+                      "surface-dim": "#121414",
+                      "secondary-fixed": "#e1e0ff",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "primary-fixed-dim": "#4edea3",
+                      "on-primary-fixed": "#002113",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-error": "#690005",
+                      "surface-container-high": "#282a2a",
+                      "on-primary-container": "#00422b",
+                      "primary-container": "#10b981",
+                      "secondary": "#c0c1ff",
+                      "inverse-surface": "#e2e2e2",
+                      "background": "#121414",
+                      "tertiary-container": "#e29100",
+                      "on-surface-variant": "#bbcabf",
+                      "on-primary": "#003824",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "error-container": "#93000a",
+                      "surface-variant": "#333535",
+                      "on-secondary-container": "#b0b2ff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "tertiary-fixed": "#ffddb8",
+                      "on-tertiary-container": "#523200",
+                      "surface-container-lowest": "#0c0f0e",
+                      "surface-container-low": "#1a1c1c",
+                      "secondary-container": "#3131c0",
+                      "on-error-container": "#ffdad6",
+                      "surface": "#121414",
+                      "tertiary": "#ffb95f",
+                      "on-secondary": "#1000a9",
+                      "on-background": "#e2e2e2",
+                      "surface-tint": "#4edea3",
+                      "on-secondary-fixed": "#07006c",
+                      "primary": "#4edea3",
+                      "on-tertiary": "#472a00",
+                      "inverse-primary": "#006c49",
+                      "primary-fixed": "#6ffbbe",
+                      "on-surface": "#e2e2e2",
+                      "error": "#ffb4ab",
+                      "outline": "#86948a",
+                      "inverse-on-surface": "#2f3130",
+                      "on-tertiary-fixed": "#2a1700",
+                      "surface-container": "#1e2020"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "gutter": "16px",
+                      "margin-mobile": "24px",
+                      "margin-desktop": "48px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "number-data": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "number-data": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(78, 222, 163, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-lg antialiased min-h-screen flex flex-col pt-16 pb-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 transition-transform">
+<div class="flex items-center gap-gutter cursor-pointer hover:opacity-80 transition-opacity">
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A stylized, high-contrast avatar placeholder for a user profile in a futuristic dark mode UI. Deep black background with a glowing white minimalist geometric icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-C-HB_fxocW8EKhzaWQcS7jQ4qdqPOYQqZK4IX5GSducdwuBUpiaPVdb5Wuahw6-HJpU6tHo5287l5e3MBgN4nD8vpFY643Tvft8-vPrk9LHJ8_k58HQN6v-eohvxS8VxfQCrltJ_bwhSVC2uqWZ7M74mxzI3sHXg6OWGKynMlGHDWyUdnu1gLmWETxkb7QtVu4_3F1McUNfXH2LxU0a-bAtW0g_Pwo3Q5oxwn3Z6iISHII1onQKX"/>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-display-lg text-display-lg text-primary tracking-tight">SentinelPay AI</h1>
+</div>
+<button class="hover:opacity-80 transition-opacity p-2 text-on-surface-variant focus:outline-none">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-4xl mx-auto px-margin-mobile pt-stack-lg pb-stack-lg flex flex-col gap-stack-lg">
+<!-- Status Badge -->
+<div class="glass-panel rounded-xl p-4 flex items-center justify-between border-l-4 border-l-primary ai-glow">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Protecting You</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">AI Guardian is active and scanning.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Settings Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<!-- Account -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Account</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Profile, linked banks, limits</p>
+</div>
+</div>
+<!-- Privacy & Data -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">lock</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Privacy &amp; Data</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Biometrics, data sharing</p>
+</div>
+</div>
+<!-- AI & Behaviour -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">AI &amp; Behaviour</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Strictness levels, auto-block</p>
+</div>
+</div>
+<!-- Notifications -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">notifications_active</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Notifications</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Alerts, summaries, sounds</p>
+</div>
+</div>
+</div>
+<!-- Advanced Section -->
+<div class="mt-4">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4 pl-2">Advanced</h4>
+<div class="glass-panel rounded-xl divide-y divide-white/10">
+<!-- Accessibility -->
+<div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface text-sm" style="font-variation-settings: 'FILL' 0;">accessibility_new</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Accessibility</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">High contrast, text size</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+<!-- Support -->
+<div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface text-sm" style="font-variation-settings: 'FILL' 0;">support_agent</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Help &amp; Support</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">FAQs, contact guardian team</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="flex justify-center mt-8">
+<button class="px-6 py-3 rounded-full border-2 border-error/50 text-error hover:bg-error/10 transition-colors font-body-lg text-body-lg flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+                Sign Out
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-margin-mobile pb-safe h-20 bg-surface-container-lowest/80 backdrop-blur-2xl border-t border-white/10 rounded-t-xl shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-16 rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-16 rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps mt-1">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-colors w-16 h-16 rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="font-label-caps text-label-caps mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:bg-white/5 transition-colors w-16 h-16 rounded-xl scale-90 duration-200 bg-white/5" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-caps text-label-caps mt-1">Settings</span>
+</a>
+</nav>
+<!-- Desktop Side Nav Overlay (Hidden on Mobile, placeholder for structural completeness if needed, though instructions ask for simple nav logic. Relying on bottom nav for mobile as requested, top bar serves desktop) -->
+</body></html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>SentinelPay - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#333535",
+                      "tertiary": "#ffb95f",
+                      "surface-container": "#1e2020",
+                      "on-primary-fixed": "#002113",
+                      "on-tertiary-container": "#523200",
+                      "outline": "#86948a",
+                      "secondary": "#c0c1ff",
+                      "on-secondary-fixed": "#07006c",
+                      "on-tertiary": "#472a00",
+                      "surface-tint": "#4edea3",
+                      "surface": "#121414",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-container": "#e29100",
+                      "primary": "#4edea3",
+                      "outline-variant": "#3c4a42",
+                      "primary-container": "#10b981",
+                      "surface-dim": "#121414",
+                      "on-primary": "#003824",
+                      "on-primary-fixed-variant": "#005236",
+                      "on-error": "#690005",
+                      "error-container": "#93000a",
+                      "primary-fixed-dim": "#4edea3",
+                      "inverse-on-surface": "#2f3130",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-primary-container": "#00422b",
+                      "background": "#121414",
+                      "surface-variant": "#333535",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "surface-bright": "#383939",
+                      "primary-fixed": "#6ffbbe",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "surface-container-low": "#1a1c1c",
+                      "surface-container-high": "#282a2a",
+                      "on-secondary-container": "#b0b2ff",
+                      "error": "#ffb4ab",
+                      "on-secondary": "#1000a9",
+                      "inverse-primary": "#006c49",
+                      "on-surface": "#e2e2e2",
+                      "on-background": "#e2e2e2",
+                      "on-surface-variant": "#bbcabf",
+                      "surface-container-lowest": "#0c0f0e",
+                      "inverse-surface": "#e2e2e2",
+                      "secondary-fixed": "#e1e0ff",
+                      "secondary-container": "#3131c0",
+                      "on-tertiary-fixed": "#2a1700",
+                      "tertiary-fixed": "#ffddb8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "stack-lg": "32px",
+                      "stack-md": "16px",
+                      "margin-mobile": "24px",
+                      "margin-desktop": "48px",
+                      "gutter": "16px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "number-data": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "number-data": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #000000; /* Deep AMOLED black */
+            color: theme('colors.on-background');
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); /* Soft violet/indigo glow */
+        }
+
+        .ai-gradient-text {
+            background: linear-gradient(135deg, #c0c1ff 0%, #4edea3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .ai-gradient-bg {
+             background: linear-gradient(135deg, #6366f1 0%, #4edea3 100%);
+        }
+
+        /* Circular Progress Ring */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .spring-bounce {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .spring-bounce:active {
+            transform: scale(0.95);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col relative pb-[100px]">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full z-40 sticky docked full-width top-0 border-b border-white/10 flat no shadows bg-surface/80 backdrop-blur-xl dark:bg-surface/80">
+<div class="flex items-center gap-3">
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-white/10" data-alt="A small, stylized profile avatar of a modern young professional woman against a dark tech-inspired background with subtle neon green and blue lighting accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3Zut6a5AZJPQ0wxPNV4sXDWrbt_gEVi5_l8GjRVYPOr0YBOou6-s7JoBY2sbJ3yZwRRpxW3GPBr9aYVfdozSAb8JnmHK8t4UvI8_zwbMaTlbInAVW0W2Phhy6_Obpo8OoHSv7qK_JypvObHagEUG0VdKMaTnWVbUBuxjjrD6sGf_8_EHgyaCTLn-IUheBDqu8_dGTv7hfd-N9rqDGADluV6Ulj_WQmGUu1-sVNKwpP7wlhuxIoqNl"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">SentinelPay</h1>
+<button class="hover:opacity-80 transition-opacity scale-95 duration-200">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile pt-stack-md pb-stack-lg flex flex-col gap-stack-lg w-full max-w-md mx-auto">
+<!-- Greeting -->
+<section>
+<h2 class="font-title-md text-title-md text-on-surface-variant">Good evening,</h2>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Ananya</h3>
+</section>
+<!-- Protection Score Ring (Bento Item 1) -->
+<section class="glass-panel rounded-xl p-stack-lg flex flex-col items-center justify-center relative ai-glow">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- SVG Ring -->
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 100 100">
+<!-- Background Track -->
+<circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="45" stroke-width="4"></circle>
+<!-- Progress Track -->
+<!-- circumference = 2 * pi * r = 2 * 3.14159 * 45 = 282.7 -->
+<!-- 98% of 282.7 = 277 -->
+<circle class="stroke-[url(#ai-gradient)] progress-ring__circle" cx="50" cy="50" fill="transparent" r="45" stroke-dasharray="282.7" stroke-dashoffset="5.7" stroke-linecap="round" stroke-width="4"></circle>
+<defs>
+<lineargradient id="ai-gradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#c0c1ff"></stop>
+<stop offset="100%" stop-color="#4edea3"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="text-center z-10 flex flex-col items-center">
+<span class="material-symbols-outlined text-primary mb-1" style="font-variation-settings: 'FILL' 1;">shield_locked</span>
+<div class="font-display-lg text-display-lg text-on-surface">98%</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant mt-1">PROTECTION SCORE</div>
+</div>
+</div>
+<div class="mt-stack-md text-center">
+<p class="font-body-sm text-body-sm text-primary">System Secure. Continuous scanning active.</p>
+</div>
+</section>
+<!-- Stat Row (Bento Grid 2 Columns) -->
+<section class="grid grid-cols-2 gap-gutter">
+<!-- Payments Protected -->
+<div class="glass-panel rounded-xl p-stack-md flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">payments</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">PROTECTED</span>
+</div>
+<div class="font-number-data text-number-data text-on-surface">1,248</div>
+<div class="font-body-sm text-body-sm text-primary mt-1 text-xs">↑ 12 this week</div>
+</div>
+<!-- Behaviour Confidence -->
+<div class="glass-panel rounded-xl p-stack-md flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">psychology</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">BEHAVIOUR</span>
+</div>
+<div class="font-number-data text-number-data text-on-surface">High</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Biometrics match</div>
+</div>
+</section>
+<!-- Quick Scan FAB Equivalent -->
+<button class="w-full ai-gradient-bg rounded-xl p-stack-md flex items-center justify-center gap-3 spring-bounce shadow-[0_0_20px_rgba(78,222,163,0.3)]">
+<span class="material-symbols-outlined text-on-primary">qr_code_scanner</span>
+<span class="font-title-md text-title-md text-on-primary">Quick Scan &amp; Pay</span>
+</button>
+<!-- Recent Payments List -->
+<section class="flex flex-col gap-stack-md mt-stack-sm">
+<div class="flex justify-between items-end mb-2">
+<h3 class="font-title-md text-title-md text-on-surface">Recent Scans</h3>
+<span class="font-body-sm text-body-sm text-primary cursor-pointer">View All</span>
+</div>
+<!-- List Item 1 -->
+<div class="glass-panel rounded-lg p-stack-md flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+</div>
+<div>
+<div class="font-body-lg text-body-lg text-on-surface">Coffee House</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Today, 09:41 AM</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-number-data text-number-data text-on-surface">₹450</div>
+<!-- Verdict Badge -->
+<div class="flex items-center gap-1 bg-primary-container/20 border border-primary/30 rounded-full px-2 py-0.5 mt-1">
+<span class="material-symbols-outlined text-[10px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-caps text-[10px] text-primary">SAFE</span>
+</div>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="glass-panel rounded-lg p-stack-md flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+</div>
+<div>
+<div class="font-body-lg text-body-lg text-on-surface">Fresh Mart</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Yesterday, 18:20</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-number-data text-number-data text-on-surface">₹1,200</div>
+<!-- Verdict Badge -->
+<div class="flex items-center gap-1 bg-primary-container/20 border border-primary/30 rounded-full px-2 py-0.5 mt-1">
+<span class="material-symbols-outlined text-[10px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-caps text-[10px] text-primary">SAFE</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-2 pb-safe docked full-width bottom-0 rounded-t-xl border-t border-white/10 shadow-lg bg-surface-container/60 backdrop-blur-3xl dark:bg-surface-container/60">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container/20 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1 hover:bg-surface-variant/30 spring-bounce transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<!-- Scan -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps mt-1">Scan</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-caps text-label-caps mt-1">History</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

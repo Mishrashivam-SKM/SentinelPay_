@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transaction History - SentinelPay</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#6ffbbe",
+                    "surface": "#121414",
+                    "tertiary-container": "#e29100",
+                    "surface-tint": "#4edea3",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-variant": "#333535",
+                    "surface-bright": "#383939",
+                    "on-primary-container": "#00422b",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "surface-dim": "#121414",
+                    "surface-container-high": "#282a2a",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary": "#c0c1ff",
+                    "on-surface-variant": "#bbcabf",
+                    "on-primary-fixed-variant": "#005236",
+                    "on-background": "#e2e2e2",
+                    "inverse-on-surface": "#2f3130",
+                    "surface-container-lowest": "#0c0f0e",
+                    "on-tertiary-container": "#523200",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "on-secondary": "#1000a9",
+                    "surface-container": "#1e2020",
+                    "primary-fixed-dim": "#4edea3",
+                    "inverse-primary": "#006c49",
+                    "outline-variant": "#3c4a42",
+                    "on-error": "#690005",
+                    "on-tertiary": "#472a00",
+                    "background": "#121414",
+                    "on-surface": "#e2e2e2",
+                    "error": "#ffb4ab",
+                    "secondary-fixed": "#e1e0ff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-container-low": "#1a1c1c",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "primary": "#4edea3",
+                    "secondary-container": "#3131c0",
+                    "tertiary": "#ffb95f",
+                    "surface-container-highest": "#333535",
+                    "primary-container": "#10b981",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-secondary-container": "#b0b2ff",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#002113",
+                    "error-container": "#93000a",
+                    "on-primary": "#003824",
+                    "inverse-surface": "#e2e2e2",
+                    "outline": "#86948a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "margin-desktop": "48px",
+                    "margin-mobile": "24px",
+                    "gutter": "16px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "title-md": ["Inter"],
+                    "number-data": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "number-data": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Subtle glow for AI elements */
+        .glow-high-risk {
+            box-shadow: 0 0 15px rgba(255, 180, 171, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg min-h-screen flex flex-col antialiased selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-40 bg-surface/80 backdrop-blur-xl dark:bg-surface/80 border-b border-white/10 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 transition-all duration-300">
+<!-- Leading: Avatar & Brand -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 flex-shrink-0">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close up, cinematic portrait of a young professional user in a futuristic neon lit city. The lighting is moody and dark mode optimized with deep blacks and subtle cyan rim lighting, reflecting a high-tech security environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDEaJnwcIzwhbEFmDas50-pbEKjdnzrFUqJt4WaY8qeoA8bdqqpEwrBRVyPvIQ5dvzn0j4YDkw8gpIQFm3qDp66MCwpFchMEaKKzt-X1U9NXUGIgHRpTlkCQWkmQtSRjUOoLsCT4IsY03BcaVktB989HVebCK0weH0oUnnnvMvnmRJb6Z1eAamQjVdSpjiTEvVuU5YYA3xriqQ670xfmvc0yBUqh6jg02pC9sxAwkFyU5rwscTgADt"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-primary dark:text-primary-fixed-dim tracking-tight">SentinelPay</h1>
+</div>
+<!-- Desktop Navigation Shell (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">home</span>
+                Home
+            </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+                Scan
+            </a>
+<!-- Active Tab -->
+<a class="text-on-surface dark:text-on-surface font-label-caps text-label-caps hover:opacity-80 transition-opacity flex items-center gap-2 bg-surface-container py-1.5 px-3 rounded-full border border-white/5" href="#">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">history</span>
+                History
+            </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- Trailing: Notifications -->
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:bg-surface-variant/30 scale-95 duration-200 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-[800px] w-full mx-auto flex flex-col gap-stack-lg">
+<!-- Header & Search -->
+<section class="flex flex-col gap-stack-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg">Transactions</h2>
+<button class="text-primary text-body-sm font-medium hover:opacity-80 transition-opacity flex items-center gap-1">
+                    Export <span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+</div>
+<!-- Glassmorphic Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline-variant group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full bg-surface-container/60 border border-outline-variant/30 backdrop-blur-md rounded-xl py-3.5 pl-12 pr-4 text-body-lg text-on-surface placeholder:text-outline-variant focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all duration-300" placeholder="Search merchants, amounts, or dates..." type="text"/>
+</div>
+</section>
+<!-- Filter Chips Row -->
+<section class="flex gap-2 overflow-x-auto no-scrollbar pb-2 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 scroll-smooth">
+<button class="flex-shrink-0 bg-primary/10 border border-primary text-primary px-5 py-2 rounded-full font-label-caps text-label-caps transition-colors">
+                All
+            </button>
+<button class="flex-shrink-0 bg-surface-container border border-outline-variant/50 text-on-surface-variant px-5 py-2 rounded-full font-label-caps text-label-caps hover:bg-surface-variant/50 transition-colors">
+                Safe
+            </button>
+<button class="flex-shrink-0 bg-surface-container border border-outline-variant/50 text-on-surface-variant px-5 py-2 rounded-full font-label-caps text-label-caps hover:bg-surface-variant/50 transition-colors">
+                Caution
+            </button>
+<button class="flex-shrink-0 bg-surface-container border border-outline-variant/50 text-on-surface-variant px-5 py-2 rounded-full font-label-caps text-label-caps hover:bg-surface-variant/50 transition-colors">
+                High Risk
+            </button>
+</section>
+<!-- Transaction List -->
+<section class="flex flex-col gap-stack-lg">
+<!-- Group: Today -->
+<div class="flex flex-col gap-stack-sm">
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-2 pl-1 font-medium tracking-wide uppercase">Today</h3>
+<!-- Item 1: High Risk -->
+<div class="bg-surface-container/40 border border-error/20 backdrop-blur-md rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container/60 transition-all cursor-pointer glow-high-risk relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-error rounded-l-xl opacity-80"></div>
+<div class="w-12 h-12 rounded-full bg-surface border border-error/20 flex flex-shrink-0 items-center justify-center text-error relative">
+<span class="material-symbols-outlined">currency_bitcoin</span>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-error rounded-full border border-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-title-md text-title-md text-on-surface truncate pr-2">Unknown Crypto Terminal</h4>
+<span class="font-number-data text-number-data text-on-surface whitespace-nowrap">₹15,000.00</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">08:15 AM</span>
+<!-- Risk Verdict Badge: High Risk -->
+<div class="bg-error/10 border border-error/30 text-error px-2 py-0.5 rounded-full font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">gpp_bad</span>
+                                HIGH RISK
+                            </div>
+</div>
+</div>
+</div>
+<!-- Item 2: Safe -->
+<div class="bg-surface-container/20 border border-white/5 backdrop-blur-md rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface border border-outline-variant/30 flex flex-shrink-0 items-center justify-center text-on-surface-variant overflow-hidden">
+<img alt="Starbucks" class="w-full h-full object-cover opacity-80" data-alt="A clean, minimalist logo of a modern coffee shop consisting of simple geometric shapes on a dark grey background. High-resolution, optimized for dark mode interfaces." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlRqY6hKe78gLXOmmZep48lTupT2wIC52DymrnG07qaP5nRG-KQeFQWKrXCDaPE1YjtxA2p-PRWn7yYVJDVDM2PAW606vBmDBD6FYVAihcq5s655hqoUZAMyj8v30NLtxqU2uwFEhE7KxAqWqvfJ2oxRqo1MdodDdU1uo5E40rQW9Lkky4hjGgLaIJT-vnWnusxiZ-aovQOXZ28gbHvm5i9awt3K6RFRIagSQh-79BWLpKyx3ravA2"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-title-md text-title-md text-on-surface truncate pr-2">Starbucks Reserve</h4>
+<span class="font-number-data text-number-data text-on-surface whitespace-nowrap">₹850.00</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">10:42 AM</span>
+<!-- Risk Verdict Badge: Safe -->
+<div class="bg-primary/10 border border-primary/30 text-primary px-2 py-0.5 rounded-full font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                SAFE
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Group: Yesterday -->
+<div class="flex flex-col gap-stack-sm">
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-2 pl-1 font-medium tracking-wide uppercase mt-4">Yesterday</h3>
+<!-- Item 3: Caution -->
+<div class="bg-surface-container/20 border border-white/5 backdrop-blur-md rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container/40 transition-all cursor-pointer relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary-container rounded-l-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+<div class="w-12 h-12 rounded-full bg-surface border border-tertiary-container/30 flex flex-shrink-0 items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">vpn_lock</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-title-md text-title-md text-on-surface truncate pr-2">Global VPN Service Ltd</h4>
+<span class="font-number-data text-number-data text-on-surface whitespace-nowrap">₹2,499.00</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">1:12 PM</span>
+<!-- Risk Verdict Badge: Caution -->
+<div class="bg-tertiary-container/10 border border-tertiary-container/30 text-tertiary px-2 py-0.5 rounded-full font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">gpp_maybe</span>
+                                CAUTION
+                            </div>
+</div>
+</div>
+</div>
+<!-- Item 4: Safe -->
+<div class="bg-surface-container/20 border border-white/5 backdrop-blur-md rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface border border-outline-variant/30 flex flex-shrink-0 items-center justify-center text-on-surface-variant overflow-hidden">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-title-md text-title-md text-on-surface truncate pr-2">Amazon India</h4>
+<span class="font-number-data text-number-data text-on-surface whitespace-nowrap">₹4,250.00</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">9:30 AM</span>
+<!-- Risk Verdict Badge: Safe -->
+<div class="bg-primary/10 border border-primary/30 text-primary px-2 py-0.5 rounded-full font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                SAFE
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-2 pb-safe bg-surface-container/60 backdrop-blur-3xl dark:bg-surface-container/60 rounded-t-xl border-t border-white/10 shadow-lg">
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 h-12 rounded-xl">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-caps text-label-caps mt-1 scale-75 origin-top">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 h-12 rounded-xl">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps mt-1 scale-75 origin-top">Scan</span>
+</button>
+<!-- Active Navigation Item: History -->
+<button class="flex flex-col items-center justify-center bg-primary-container/20 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1.5 spring-bounce transition-transform duration-300 min-w-[64px]">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-caps text-label-caps mt-1">History</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline dark:text-outline-variant hover:bg-surface-variant/30 spring-bounce transition-transform duration-300 w-16 h-12 rounded-xl">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-caps text-label-caps mt-1 scale-75 origin-top">Settings</span>
+</button>
+</nav>
+</body></html>
