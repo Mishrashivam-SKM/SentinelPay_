@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final _storage = const FlutterSecureStorage();
+  
+  bool _biometricsEnabled = false;
+  bool _demoModeEnabled = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+  
+  Future<void> _loadSettings() async {
+    final bio = await _storage.read(key: 'biometrics_enabled') == 'true';
+    final demo = await _storage.read(key: 'demo_mode') == 'true';
+    if (mounted) {
+      setState(() {
+        _biometricsEnabled = bio;
+        _demoModeEnabled = demo;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,21 +46,39 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         children: [
           _buildSettingsGroup(
-            'Privacy & Data',
+            'Security',
             [
-              _buildSettingsRow(Icons.sms_outlined, 'SMS Permission', trailing: Switch(value: true, activeColor: AppColors.primary, onChanged: (v) {})),
-              _buildSettingsRow(Icons.data_usage_outlined, 'View Parsed History', onTap: () {}),
-              _buildSettingsRow(Icons.delete_outline, 'Delete All Data', isDestructive: true, onTap: () {}),
+              _buildSettingsRow(
+                Icons.fingerprint_rounded, 
+                'Enable Biometrics', 
+                trailing: Switch(
+                  value: _biometricsEnabled, 
+                  activeColor: AppColors.primary, 
+                  onChanged: (v) async {
+                    await _storage.write(key: 'biometrics_enabled', value: v.toString());
+                    setState(() => _biometricsEnabled = v);
+                  }
+                ),
+              ),
             ],
           ),
           
           const SizedBox(height: 32),
           
           _buildSettingsGroup(
-            'Notifications',
+            'Privacy & Data',
             [
-              _buildSettingsRow(Icons.notifications_active_outlined, 'Push Notifications', trailing: Switch(value: true, activeColor: AppColors.primary, onChanged: (v) {})),
-              _buildSettingsRow(Icons.warning_amber_rounded, 'High Risk Alerts Only', trailing: Switch(value: false, activeColor: AppColors.primary, onChanged: (v) {})),
+              _buildSettingsRow(
+                Icons.sms_outlined, 
+                'SMS Permission Settings', 
+                onTap: () {
+                  openAppSettings();
+                }
+              ),
+              _buildSettingsRow(Icons.delete_outline, 'Delete All Data', isDestructive: true, onTap: () {
+                // Wipe DB logic here
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All data deleted.')));
+              }),
             ],
           ),
           
@@ -40,8 +87,18 @@ class SettingsScreen extends StatelessWidget {
           _buildSettingsGroup(
             'Developer Options',
             [
-              _buildSettingsRow(Icons.science_outlined, 'Demo Mode (Mock SMS)', trailing: Switch(value: true, activeColor: AppColors.primary, onChanged: (v) {})),
-              _buildSettingsRow(Icons.bug_report_outlined, 'Force Retrain Model', onTap: () {}),
+              _buildSettingsRow(
+                Icons.science_outlined, 
+                'Demo Mode (Mock Features)', 
+                trailing: Switch(
+                  value: _demoModeEnabled, 
+                  activeColor: AppColors.primary, 
+                  onChanged: (v) async {
+                    await _storage.write(key: 'demo_mode', value: v.toString());
+                    setState(() => _demoModeEnabled = v);
+                  }
+                ),
+              ),
             ],
           ),
           

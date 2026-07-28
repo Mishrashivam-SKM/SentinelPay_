@@ -6,8 +6,9 @@ import '../../features/sms_permission/sms_permission_screen.dart';
 import '../../features/parse_progress/parse_progress_screen.dart';
 import '../../features/parse_progress/parsed_review_screen.dart';
 import '../../features/onboarding/mode_choice_screen.dart';
+import '../../features/auth/pin_setup_screen.dart';
+import '../../features/auth/auth_screen.dart';
 import '../../features/analysis/handoff_screen.dart';
-import '../../features/analysis/payment_outcome_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/scanner/scanner_screen.dart';
 import '../../features/analysis/analysis_screen.dart';
@@ -21,6 +22,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/auth',
+      builder: (context, state) => const AuthScreen(),
+    ),
+    GoRoute(
+      path: '/pin_setup',
+      builder: (context, state) => const PinSetupScreen(),
     ),
     GoRoute(
       path: '/onboarding',
@@ -44,21 +53,24 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/handoff',
-      builder: (context, state) => const HandoffScreen(),
-    ),
-    GoRoute(
-      path: '/payment_outcome',
-      builder: (context, state) => const PaymentOutcomeScreen(),
+      builder: (context, state) {
+        final uri = state.extra as String?;
+        return HandoffScreen(upiUri: uri);
+      },
     ),
     GoRoute(
       path: '/dashboard',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        key: state.pageKey,
-        child: const DashboardScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-      ),
+      pageBuilder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final syncingUri = extra?['syncingUri'] as String?;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: DashboardScreen(syncingUri: syncingUri),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/scan',
@@ -72,7 +84,13 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/analysis',
-      builder: (context, state) => const AnalysisScreen(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return AnalysisScreen(
+          mockAssessment: extra?['assessment'],
+          upiUri: extra?['upiUri'],
+        );
+      },
     ),
     GoRoute(
       path: '/transaction_detail',

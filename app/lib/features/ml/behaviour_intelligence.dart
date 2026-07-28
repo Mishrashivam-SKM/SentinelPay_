@@ -28,7 +28,18 @@ class BehaviourIntelligence {
 
   double scoreBehaviour(ParsedTransaction current, List<ParsedTransaction> history) {
     if (!_isTrained || _trainingSampleCount < 15) {
-      return 0.5; // Cold start fallback
+      // If we don't have enough history to train the model, we can't trust the score.
+      // But we CAN check if the payee exists in whatever limited history we have.
+      bool payeeExists = history.any((tx) => tx.payeeIdentifier == current.payeeIdentifier);
+      return payeeExists ? 0.3 : 0.7; // 0.7 = Warning zone for unknown payees
+    }
+
+    // Strict Unknown Payee Penalty for ML model
+    bool payeeExists = history.any((tx) => tx.payeeIdentifier == current.payeeIdentifier);
+    if (!payeeExists) {
+      // If the model has NEVER seen this payee in the rolling 200 transaction window,
+      // it is inherently risky. We artificially boost the anomaly score.
+      return 0.8; // High Warning / Danger threshold
     }
 
     TransactionFeatureVector vec = FeatureComputation.computeFeatures(current, history);

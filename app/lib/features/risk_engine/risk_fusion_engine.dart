@@ -15,6 +15,21 @@ class RiskFusionEngine {
 
   RiskFusionEngine(this._behaviourIntelligence);
 
+  RiskAssessment assessLiveIntent(String payeeVpa, String payeeName, double amount, List<ParsedTransaction> history) {
+    final current = ParsedTransaction(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      direction: TransactionDirection.debit,
+      amount: amount,
+      payeeIdentifier: payeeVpa,
+      payeeName: payeeName,
+      timestamp: DateTime.now(),
+      method: PaymentMethod.upi,
+      sourceBank: "LiveScan",
+      source: 'live',
+    );
+    return assessTransaction(current, history);
+  }
+
   RiskAssessment assessTransaction(ParsedTransaction current, List<ParsedTransaction> history) {
     // Gather scores
     double behaviourScore = _behaviourIntelligence.scoreBehaviour(current, history);

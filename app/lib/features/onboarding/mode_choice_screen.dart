@@ -38,7 +38,7 @@ class ModeChoiceScreen extends StatelessWidget {
                 description: 'Use SentinelPay as your daily security layer for real UPI transactions.',
                 icon: Icons.security_rounded,
                 isPrimary: true,
-                onTap: () => context.go('/dashboard'),
+                onTap: () => context.go('/pin_setup'),
               ),
               
               const SizedBox(height: 24),
@@ -50,7 +50,7 @@ class ModeChoiceScreen extends StatelessWidget {
                 description: 'Demo mode. Scan simulated fraud QR codes to see how the AI works without real payments.',
                 icon: Icons.science_outlined,
                 isPrimary: false,
-                onTap: () => context.go('/dashboard'), // For now routes to same dashboard
+                onTap: () => context.go('/pin_setup'),
               ),
             ],
           ),

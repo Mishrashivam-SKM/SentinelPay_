@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
+import '../../core/utils/upi_parser.dart';
+import '../../core/providers/risk_provider.dart';
+import '../../core/data/database/transaction_dao.dart';
+import '../../core/data/models/risk_assessment.dart';
+import '../../core/data/models/parsed_transaction.dart';
 import 'dart:async';
 
-class ScannerScreen extends StatefulWidget {
+class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
 
   @override
-  State<ScannerScreen> createState() => _ScannerScreenState();
+  ConsumerState<ScannerScreen> createState() => _ScannerScreenState();
 }
 
-class _ScannerScreenState extends State<ScannerScreen> with SingleTickerProviderStateMixin {
+class _ScannerScreenState extends ConsumerState<ScannerScreen> with SingleTickerProviderStateMixin {
   late final MobileScannerController _scannerController;
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -42,7 +49,7 @@ class _ScannerScreenState extends State<ScannerScreen> with SingleTickerProvider
     super.dispose();
   }
 
-  void _onDetect(BarcodeCapture capture) {
+  void _onDetect(BarcodeCapture capture) async {
     if (_isProcessing) return;
     
     final List<Barcode> barcodes = capture.barcodes;
@@ -51,13 +58,55 @@ class _ScannerScreenState extends State<ScannerScreen> with SingleTickerProvider
       if (code != null) {
         setState(() => _isProcessing = true);
         
-        // Mock processing delay then route to analysis
-        // In reality, this would parse the UPI URI and hit the RiskFusionEngine
-        Timer(const Duration(milliseconds: 500), () {
+        final parser = UpiParser(code);
+        
+        // Non-payment QR detection (URL, text, etc)
+        if (!parser.isValidUpiUri) {
+          final engine = ref.read(riskFusionEngineProvider);
+          // Manually create a block assessment for invalid QR
+          final assessment = RiskAssessment(
+            transactionId: DateTime.now().millisecondsSinceEpoch.toString(),
+            verdict: RiskVerdict.block,
+            confidenceScore: 1.0,
+            evidence: [
+              EvidenceItem(
+                key: 'invalid_qr',
+                label: 'Format',
+                detail: 'This is not a valid UPI payment code. It may link to a malicious website or app.',
+                isPositive: false,
+              )
+            ],
+            explanationTitle: 'Invalid Payment QR Code',
+            explanationBody: 'Scanning this code will not initiate a secure UPI payment.',
+          );
+          
           if (mounted) {
-            context.go('/analysis');
+            context.go('/analysis', extra: {
+              'assessment': assessment,
+              'upiUri': code,
+            });
           }
-        });
+          return;
+        }
+
+        // Live processing
+        final engine = ref.read(riskFusionEngineProvider);
+        final history = await TransactionDao().getAllTransactions();
+        
+        final assessment = engine.assessLiveIntent(
+          parser.payeeVpa ?? 'Unknown',
+          parser.payeeName ?? 'Unknown Entity',
+          parser.amount ?? 0.0,
+          history,
+        );
+
+        if (mounted) {
+           // We pass both the assessment and the original URI so handoff can launch it
+           context.go('/analysis', extra: {
+             'assessment': assessment,
+             'upiUri': code,
+           });
+        }
       }
     }
   }
@@ -92,13 +141,29 @@ class _ScannerScreenState extends State<ScannerScreen> with SingleTickerProvider
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error, color: AppColors.error, size: 48),
+                    const Icon(Icons.videocam_off_rounded, color: AppColors.error, size: 64),
                     const SizedBox(height: 16),
-                    Text('Camera error: ${error.errorCode}', style: AppTypography.bodyLg),
-                    const SizedBox(height: 16),
+                    Text(
+                      'Camera Access Denied', 
+                      style: AppTypography.titleMd.copyWith(color: AppColors.error)
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'SentinelPay needs your camera to scan UPI QR codes.', 
+                      style: AppTypography.bodyLg,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () => context.go('/analysis'), // Mock fallback
-                      child: const Text('Simulate Scan'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                      ),
+                      onPressed: () {
+                        // We use permission_handler to open settings
+                        openAppSettings();
+                      },
+                      child: const Text('Open Settings'),
                     )
                   ],
                 ),

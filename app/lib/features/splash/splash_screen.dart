@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/theme/app_decorations.dart';
+import '../../core/data/database/transaction_dao.dart';
+import '../../core/providers/risk_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,14 +18,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final _storage = const FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+    _checkAuthAndNavigate();
+  }
+  
+  Future<void> _checkAuthAndNavigate() async {
+    // Artificial delay for splash animation
+    await Future.delayed(const Duration(seconds: 2));
+    
+    // Train ML model on boot with historical data
+    final history = await TransactionDao().getAllTransactions();
+    final bi = ProviderScope.containerOf(context, listen: false).read(behaviourIntelligenceProvider);
+    bi.train(history);
+    
+    final isOnboarded = await _storage.read(key: 'is_onboarded');
+    
+    if (mounted) {
+      if (isOnboarded == 'true') {
+        context.go('/auth');
+      } else {
         context.go('/onboarding');
       }
-    });
+    }
   }
 
   @override

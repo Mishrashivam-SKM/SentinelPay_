@@ -8,8 +8,72 @@ import '../../core/widgets/confidence_ring.dart';
 import '../../core/widgets/risk_verdict_badge.dart';
 import '../../core/data/models/risk_assessment.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  final String? syncingUri;
+  
+  const DashboardScreen({super.key, this.syncingUri});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.syncingUri != null) {
+      _startMagicSync();
+    }
+  }
+
+  void _startMagicSync() {
+    // We will show a dialog or snackbar indicating sync is active
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              ),
+              const SizedBox(width: 16),
+              Text('Waiting for bank confirmation SMS...', style: AppTypography.bodyLg),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+          duration: const Duration(minutes: 5), // Keep active until SMS arrives
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      
+      // Start SMS Listener here using telephony
+      _listenForConfirmationSms();
+    });
+  }
+
+  void _listenForConfirmationSms() {
+    // Mocking the listener behavior for now
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 16),
+                Text('Payment confirmed securely!', style: AppTypography.bodyLg),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

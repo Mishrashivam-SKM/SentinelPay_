@@ -3,9 +3,35 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/glass_panel.dart';
+import '../../core/utils/upi_parser.dart';
+import '../../core/data/database/transaction_dao.dart';
+import '../../core/data/models/parsed_transaction.dart';
 
 class PaymentOutcomeScreen extends StatelessWidget {
-  const PaymentOutcomeScreen({super.key});
+  final String? upiUri;
+  
+  const PaymentOutcomeScreen({super.key, this.upiUri});
+
+  Future<void> _recordTransaction(bool success) async {
+    if (upiUri == null) return;
+    final parser = UpiParser(upiUri!);
+    if (!parser.isValidUpiUri) return;
+    
+    if (success) {
+      final tx = ParsedTransaction(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        direction: TransactionDirection.debit,
+        amount: parser.amount ?? 0.0,
+        payeeIdentifier: parser.payeeVpa ?? 'unknown@upi',
+        payeeName: parser.payeeName ?? 'Unknown Entity',
+        timestamp: DateTime.now(),
+        method: PaymentMethod.upi,
+        sourceBank: "Sentinel_Logged",
+        source: 'live',
+      );
+      await TransactionDao().insertTransaction(tx);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +63,9 @@ class PaymentOutcomeScreen extends StatelessWidget {
               const SizedBox(height: 48),
               
               GlassPanel(
-                onTap: () {
-                  // Updates database as successful
-                  context.go('/dashboard');
+                onTap: () async {
+                  await _recordTransaction(true);
+                  if (context.mounted) context.go('/dashboard');
                 },
                 child: Row(
                   children: [
@@ -53,9 +79,9 @@ class PaymentOutcomeScreen extends StatelessWidget {
               const SizedBox(height: 16),
               
               GlassPanel(
-                onTap: () {
-                  // Updates database as failed/cancelled
-                  context.go('/dashboard');
+                onTap: () async {
+                  await _recordTransaction(false);
+                  if (context.mounted) context.go('/dashboard');
                 },
                 child: Row(
                   children: [

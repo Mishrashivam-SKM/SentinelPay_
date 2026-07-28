@@ -5,9 +5,18 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/widgets/risk_verdict_badge.dart';
 import '../../core/data/models/risk_assessment.dart';
+import '../../core/data/models/parsed_transaction.dart';
+import '../../core/data/database/transaction_dao.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
+
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  final TransactionDao _dao = TransactionDao();
 
   @override
   Widget build(BuildContext context) {
@@ -22,25 +31,44 @@ class HistoryScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24.0),
-        children: [
-          Text('Today', style: AppTypography.labelCaps.copyWith(color: AppColors.onSurfaceVariant)),
-          const SizedBox(height: 16),
-          _buildHistoryItem(context, 'Coffee House', '09:41 AM', '450', RiskVerdict.safe, Icons.storefront_outlined),
-          const SizedBox(height: 12),
-          _buildHistoryItem(context, 'Fresh Mart', '08:20 AM', '1,200', RiskVerdict.safe, Icons.shopping_bag_outlined),
-          
-          const SizedBox(height: 32),
-          Text('Yesterday', style: AppTypography.labelCaps.copyWith(color: AppColors.onSurfaceVariant)),
-          const SizedBox(height: 16),
-          
-          _buildHistoryItem(context, 'Unknown Vendor', '14:30', '5,500', RiskVerdict.caution, Icons.help_outline),
-          const SizedBox(height: 12),
-          _buildHistoryItem(context, 'Electric Bill', '10:00', '2,400', RiskVerdict.safe, Icons.bolt_outlined),
-          
-          const SizedBox(height: 100), // Bottom nav padding
-        ],
+      body: FutureBuilder<List<ParsedTransaction>>(
+        future: _dao.getAllTransactions(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text('No transactions found.', style: AppTypography.bodyLg),
+            );
+          }
+
+          final transactions = snapshot.data!.reversed.toList(); // Newest first
+
+          return ListView.separated(
+            padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
+            itemCount: transactions.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final tx = transactions[index];
+              final time = '${tx.timestamp.hour.toString().padLeft(2, '0')}:${tx.timestamp.minute.toString().padLeft(2, '0')}';
+              
+              // Simplistic mapping for now since historical SMS doesn't have an exact risk verdict.
+              // In production we would save the risk assessment along with the transaction.
+              RiskVerdict dummyVerdict = RiskVerdict.safe;
+              if (tx.amount > 50000) dummyVerdict = RiskVerdict.caution; // Example threshold
+              
+              return _buildHistoryItem(
+                context, 
+                tx.payeeName ?? 'Unknown', 
+                time, 
+                tx.amount.toStringAsFixed(0), 
+                dummyVerdict, 
+                Icons.swap_horiz_rounded
+              );
+            },
+          );
+        },
       ),
       extendBody: true,
       bottomNavigationBar: const BottomNavBar(currentIndex: 2),
@@ -72,7 +100,7 @@ class HistoryScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppTypography.bodyLg),
+                  Text(name, style: AppTypography.bodyLg, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(time, style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
                 ],
               ),

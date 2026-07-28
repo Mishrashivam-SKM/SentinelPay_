@@ -3,12 +3,16 @@ import 'package:integration_test/integration_test.dart';
 import 'package:sentinelpay_ai/main.dart' as app;
 import 'package:flutter/material.dart';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('end-to-end test', () {
     testWidgets('tap through onboarding and verify dashboard',
         (tester) async {
+      await const FlutterSecureStorage().deleteAll();
+      
       app.main();
       
       // Pump initial frame
@@ -55,6 +59,30 @@ void main() {
       if (protectModeBtn.evaluate().isNotEmpty) {
          await tester.tap(protectModeBtn);
          await tester.pump(const Duration(seconds: 1));
+      }
+      await tester.pumpAndSettle();
+      
+      // Now on PinSetupScreen. Tap 4 digits on the keypad.
+      final key1 = find.text('1');
+      if (key1.evaluate().isNotEmpty) {
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         
+         // Tap 1111 again to confirm
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(milliseconds: 100));
+         await tester.tap(key1);
+         await tester.pump(const Duration(seconds: 2));
       }
       
       // Now on Dashboard. Look for a widget that belongs to the Dashboard.

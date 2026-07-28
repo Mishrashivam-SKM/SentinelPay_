@@ -11,9 +11,10 @@ import '../../core/data/models/risk_assessment.dart';
 
 class AnalysisScreen extends StatefulWidget {
   final RiskAssessment? mockAssessment;
+  final String? upiUri;
   final bool skipDelay;
 
-  const AnalysisScreen({super.key, this.mockAssessment, this.skipDelay = false});
+  const AnalysisScreen({super.key, this.mockAssessment, this.upiUri, this.skipDelay = false});
 
   @override
   State<AnalysisScreen> createState() => _AnalysisScreenState();
@@ -141,7 +142,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () => context.go('/handoff'),
+                onPressed: () {
+                   if (_assessment.verdict == RiskVerdict.safe) {
+                      context.go('/handoff', extra: widget.upiUri);
+                   } else {
+                      context.go('/dashboard');
+                   }
+                },
                 icon: Icon(Icons.check_circle_outline, color: AppColors.onPrimary),
                 label: Text(
                   _assessment.verdict == RiskVerdict.safe ? 'Pay Securely' : 'Cancel Payment', 
