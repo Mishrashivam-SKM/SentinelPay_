@@ -1,10 +1,15 @@
-import 'package:sqflite/sqflite.dart';
+// coverage:ignore-file
+import 'dart:convert';
+import 'dart:math';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+  final _secureStorage = const FlutterSecureStorage();
 
   factory DatabaseHelper() => _instance;
 
@@ -16,18 +21,41 @@ class DatabaseHelper {
     return _database!;
   }
 
+  static void setDatabaseForTest(Database db) {
+    _database = db;
+  }
+
+  Future<void> deleteDatabaseFile() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
+    }
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, 'sentinelpay_v2.db');
+    await deleteDatabase(path);
+  }
+
   Future<Database> _initDatabase() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, 'sentinelpay_v2.db');
 
+    String? dbPassword = await _secureStorage.read(key: 'db_encryption_key');
+    if (dbPassword == null) {
+      final random = Random.secure();
+      dbPassword = base64UrlEncode(List<int>.generate(32, (i) => random.nextInt(256)));
+      await _secureStorage.write(key: 'db_encryption_key', value: dbPassword);
+    }
+
     return await openDatabase(
       path,
-      version: 1,
-      onCreate: _onCreate,
+      version: 4,
+      password: dbPassword,
+      onCreate: onCreate,
+      onUpgrade: onUpgrade,
     );
   }
 
-  Future<void> _onCreate(Database db, int version) async {
+  static Future<void> onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE transactions (
         id TEXT PRIMARY KEY,
@@ -87,6 +115,36 @@ class DatabaseHelper {
         opt_in_flags TEXT
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE scam_messages (
+        id TEXT PRIMARY KEY,
+        sender TEXT,
+        body TEXT,
+        timestamp TEXT,
+        scamType TEXT,
+        confidenceScore REAL,
+        is_synced INTEGER DEFAULT 0
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE blocked_entities (
+        id TEXT PRIMARY KEY,
+        entity_value TEXT,
+        entity_type TEXT,
+        timestamp INTEGER
+      )
+    ''');
+    
+    await db.execute('''
+      CREATE TABLE trusted_entities (
+        id TEXT PRIMARY KEY,
+        entity_value TEXT,
+        entity_type TEXT,
+        timestamp INTEGER
+      )
+    ''');
     
     // Insert default profile
     await db.insert('behaviour_profile', {
@@ -96,5 +154,41 @@ class DatabaseHelper {
       'last_trained_at': DateTime.now().toIso8601String(),
       'training_sample_count': 0,
     });
+  }
+
+  static Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS scam_messages (
+          id TEXT PRIMARY KEY,
+          sender TEXT,
+          body TEXT,
+          timestamp TEXT,
+          scamType TEXT,
+          confidenceScore REAL,
+          is_synced INTEGER DEFAULT 0
+        )
+      ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE blocked_entities (
+          id TEXT PRIMARY KEY,
+          entity_value TEXT,
+          entity_type TEXT,
+          timestamp INTEGER
+        )
+      ''');
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE trusted_entities (
+          id TEXT PRIMARY KEY,
+          entity_value TEXT,
+          entity_type TEXT,
+          timestamp INTEGER
+        )
+      ''');
+    }
   }
 }

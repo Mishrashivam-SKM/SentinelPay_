@@ -1,6 +1,9 @@
 import '../../../core/data/models/parsed_transaction.dart';
+import '../../../core/data/database/blocklist_dao.dart';
+import '../../../core/data/models/blocked_entity.dart';
 
 class DeterministicIntelligence {
+  final BlocklistDao _blocklistDao = BlocklistDao();
   // Hardcoded blocklist for demo purposes
   static const List<String> _blockedVpas = [
     'scammer@ybl',
@@ -8,19 +11,20 @@ class DeterministicIntelligence {
     'win_lottery@okaxis'
   ];
 
-  double scoreDeterministic(ParsedTransaction current) {
-    if (current.payeeIdentifier != null && 
-        _blockedVpas.contains(current.payeeIdentifier!.toLowerCase())) {
-      return 1.0; // 1.0 = absolute highest risk
+  Future<double> scoreDeterministic(ParsedTransaction current) async {
+    if (current.payeeIdentifier != null) {
+      final vpa = current.payeeIdentifier!.toLowerCase();
+      
+      // Check hardcoded lists first
+      if (_blockedVpas.contains(vpa)) return 1.0;
+      
+      // Check user's blocklist
+      final isBlocked = await _blocklistDao.isBlocked(current.payeeIdentifier!, EntityType.upi);
+      if (isBlocked) return 1.0;
     }
     
-    // Pattern matching for suspicious names
-    if (current.payeeName != null) {
-      final lowerName = current.payeeName!.toLowerCase();
-      if (lowerName.contains('cashback') || lowerName.contains('lottery') || lowerName.contains('support')) {
-        return 0.9;
-      }
-    }
+    // Pattern matching for suspicious names is removed to prevent false positives
+    // like "Dell Support" or legitimate business cashback schemes.
     
     return 0.0; // 0.0 = no deterministic risk found
   }

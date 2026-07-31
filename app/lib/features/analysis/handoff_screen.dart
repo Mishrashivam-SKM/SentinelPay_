@@ -1,17 +1,21 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/glass_panel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HandoffScreen extends StatelessWidget {
+class HandoffScreen extends ConsumerWidget {
   final String? upiUri;
+  final String? verdict;
   
-  const HandoffScreen({super.key, this.upiUri});
+  const HandoffScreen({super.key, this.upiUri, this.verdict});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -34,43 +38,68 @@ class HandoffScreen extends StatelessWidget {
             
             const SizedBox(height: 48),
             
-            _buildAppRow(context, 'Launch Any UPI App (Default)', Icons.mobile_friendly_rounded, Colors.green),
-            const SizedBox(height: 16),
-            _buildAppRow(context, 'Google Pay', Icons.g_mobiledata_rounded, Colors.blue),
-            const SizedBox(height: 16),
-            _buildAppRow(context, 'PhonePe', Icons.mobile_friendly_rounded, Colors.purple),
-            const SizedBox(height: 16),
-            _buildAppRow(context, 'Paytm', Icons.payment_rounded, Colors.lightBlue),
-            const SizedBox(height: 16),
-            _buildAppRow(context, 'BHIM', Icons.account_balance_wallet_rounded, Colors.orange),
+            _buildAppRow(context, ref, 'Complete Payment with UPI', Icons.mobile_friendly_rounded, Colors.green),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppRow(BuildContext context, String appName, IconData icon, Color brandColor) {
+  Widget _buildAppRow(BuildContext context, WidgetRef ref, String appName, IconData icon, Color brandColor) {
     return GlassPanel(
       onTap: () async {
         if (upiUri != null) {
           final uri = Uri.parse(upiUri!);
-          if (await canLaunchUrl(uri)) {
-             await launchUrl(uri, mode: LaunchMode.externalApplication);
-          } else {
-             // In emulator without UPI apps, fallback to just going to outcome screen to mock success
-             debugPrint("Cannot launch UPI intent, probably on emulator with no apps installed.");
+          
+          if (uri.scheme != 'upi') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Invalid payment link blocked.')),
+            );
+            return;
           }
-        }
-        
-        // After returning from the external app (or immediately if it failed), go to dashboard for magic sync
-        if (context.mounted) {
-           context.go('/dashboard', extra: {'syncingUri': upiUri});
+
+          // Show security warning dialog
+          final bool? proceed = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Security Verification'),
+              content: const Text(
+                'You are about to be redirected to complete this payment.\n\n'
+                'WARNING: To prevent hijacking, please ensure you select a trusted, verified UPI app (like Google Pay, PhonePe, or BHIM) from the chooser menu on the next screen.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Proceed Safely'),
+                ),
+              ],
+            ),
+          );
+
+          if (proceed == true) {
+            if (await canLaunchUrl(uri)) {
+               final prefs = await SharedPreferences.getInstance();
+               await prefs.setString('pending_verdict', verdict ?? 'safe');
+               
+               await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else {
+               debugPrint("Cannot launch UPI intent, probably on emulator with no apps installed.");
+            }
+            
+            if (context.mounted) {
+               context.go('/dashboard', extra: {'syncingUri': upiUri});
+            }
+          }
         }
       },
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: brandColor.withOpacity(0.2),
+            backgroundColor: brandColor.withValues(alpha: 0.2),
             child: Icon(icon, color: brandColor),
           ),
           const SizedBox(width: 16),

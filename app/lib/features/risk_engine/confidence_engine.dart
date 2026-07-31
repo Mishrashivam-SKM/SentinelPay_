@@ -28,11 +28,6 @@ class ConfidenceEngine {
     if (confidence > 1.0) confidence = 1.0;
     if (confidence < 0.0) confidence = 0.0;
     
-    // To match the UI mocks (e.g. 98%), boost it artificially for realism
-    if (confidence > 0.6) {
-      confidence = 0.8 + (confidence * 0.19); // Map 0.6-1.0 to 0.91-0.99
-    }
-    
     return confidence;
   }
 }

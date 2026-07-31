@@ -1,9 +1,11 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/data/models/parsed_transaction.dart';
+import '../../core/data/database/transaction_dao.dart';
 import 'package:intl/intl.dart';
 
 class ParsedReviewScreen extends StatefulWidget {
@@ -14,35 +16,27 @@ class ParsedReviewScreen extends StatefulWidget {
 }
 
 class _ParsedReviewScreenState extends State<ParsedReviewScreen> {
-  final List<ParsedTransaction> _sampleTransactions = [
-    ParsedTransaction(
-      amount: 1240.0,
-      direction: TransactionDirection.debit,
-      method: PaymentMethod.upi,
-      payeeName: 'Amazon',
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
-      sourceBank: 'HDFC',
-      source: 'sms_historical',
-    ),
-    ParsedTransaction(
-      amount: 450.0,
-      direction: TransactionDirection.debit,
-      method: PaymentMethod.upi,
-      payeeName: 'Coffee House',
-      timestamp: DateTime.now().subtract(const Duration(days: 2)),
-      sourceBank: 'HDFC',
-      source: 'sms_historical',
-    ),
-    ParsedTransaction(
-      amount: 2500.0,
-      direction: TransactionDirection.debit,
-      method: PaymentMethod.upi,
-      payeeName: 'Electric Bill',
-      timestamp: DateTime.now().subtract(const Duration(days: 5)),
-      sourceBank: 'HDFC',
-      source: 'sms_historical',
-    ),
-  ];
+  List<ParsedTransaction> _sampleTransactions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRealTransactions();
+  }
+
+  Future<void> _loadRealTransactions() async {
+    final dao = TransactionDao();
+    final allTx = await dao.getAllTransactions();
+    
+    // Get up to 3 most recent transactions
+    allTx.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    
+    setState(() {
+      _sampleTransactions = allTx.take(3).toList();
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,35 +64,39 @@ class _ParsedReviewScreenState extends State<ParsedReviewScreen> {
               const SizedBox(height: 32),
               
               Expanded(
-                child: ListView.separated(
-                  itemCount: _sampleTransactions.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final tx = _sampleTransactions[index];
-                    return GlassPanel(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(Icons.history_rounded, color: AppColors.primary),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                child: _isLoading 
+                  ? const Center(child: CircularProgressIndicator())
+                  : _sampleTransactions.isEmpty
+                    ? Center(child: Text('No transactions found.', style: AppTypography.bodyLg))
+                    : ListView.separated(
+                        itemCount: _sampleTransactions.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final tx = _sampleTransactions[index];
+                          return GlassPanel(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
                               children: [
-                                Text(tx.payeeName ?? tx.payeeIdentifier ?? 'Unknown', style: AppTypography.titleMd),
-                                Text(
-                                  DateFormat('MMM dd • ').format(tx.timestamp) + tx.method.name.toUpperCase(),
-                                  style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant),
+                                Icon(Icons.history_rounded, color: AppColors.primary),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tx.payeeName ?? tx.payeeIdentifier ?? 'Unknown', style: AppTypography.titleMd),
+                                      Text(
+                                        DateFormat('MMM dd • ').format(tx.timestamp) + tx.method.name.toUpperCase(),
+                                        style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                                Text('₹${tx.amount.toInt()}', style: AppTypography.titleMd),
                               ],
                             ),
-                          ),
-                          Text('₹${tx.amount.toInt()}', style: AppTypography.titleMd),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
               
               const SizedBox(height: 24),

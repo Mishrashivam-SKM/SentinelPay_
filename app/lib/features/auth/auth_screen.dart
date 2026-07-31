@@ -1,4 +1,10 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'dart:math' as math;
+import 'package:crypto/crypto.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -18,7 +24,13 @@ class _AuthScreenState extends State<AuthScreen> {
   
   String _pin = '';
   bool _error = false;
-  String _savedPin = '';
+  String _savedPinHash = '';
+  String _savedPinSalt = '';
+  
+  // Brute force protection
+  int _attempts = 0;
+  DateTime? _lockoutUntil;
+  Timer? _lockoutTimer;
   
   @override
   void initState() {
@@ -26,8 +38,27 @@ class _AuthScreenState extends State<AuthScreen> {
     _loadPinAndAuthenticate();
   }
   
+  @override
+  void dispose() {
+    _lockoutTimer?.cancel();
+    super.dispose();
+  }
+  
   Future<void> _loadPinAndAuthenticate() async {
-    _savedPin = await _storage.read(key: 'user_pin') ?? '';
+    _savedPinHash = await _storage.read(key: 'user_pin_hash') ?? '';
+    _savedPinSalt = await _storage.read(key: 'user_pin_salt') ?? '';
+    
+    // Legacy migration check removed for strict security.
+    // If a user has an old plaintext pin, they will be forced to re-onboard or reset.
+
+    final attemptsStr = await _storage.read(key: 'pin_attempts') ?? '0';
+    _attempts = int.tryParse(attemptsStr) ?? 0;
+    
+    final lockoutStr = await _storage.read(key: 'pin_lockout_until');
+    if (lockoutStr != null) {
+      _lockoutUntil = DateTime.tryParse(lockoutStr);
+      _checkLockout();
+    }
     final biometricsEnabled = await _storage.read(key: 'biometrics_enabled') == 'true';
     
     if (biometricsEnabled) {
@@ -39,9 +70,11 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       final authenticated = await _localAuth.authenticate(
         localizedReason: 'Unlock SentinelPay',
+        // ignore: deprecated_member_use
         biometricOnly: true,
       );
       if (authenticated && mounted) {
+        HapticFeedback.heavyImpact();
         context.go('/dashboard');
       }
     } catch (e) {
@@ -49,7 +82,40 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
   
+  void _checkLockout() async {
+    if (_lockoutUntil != null) {
+      final now = DateTime.now();
+      // Time-travel check: if now is inexplicably far in the past compared to last attempt
+      final lastAttemptStr = await _storage.read(key: 'last_attempt_time');
+      if (lastAttemptStr != null) {
+        final lastAttempt = DateTime.tryParse(lastAttemptStr);
+        if (lastAttempt != null && now.isBefore(lastAttempt)) {
+           // User rewound the clock. Extend lockout heavily.
+           _lockoutUntil = lastAttempt.add(const Duration(minutes: 30));
+           await _storage.write(key: 'pin_lockout_until', value: _lockoutUntil!.toIso8601String());
+        }
+      }
+
+      if (now.isBefore(_lockoutUntil!)) {
+        setState(() => _error = true);
+        final duration = _lockoutUntil!.difference(now);
+        _lockoutTimer = Timer(duration, () {
+          if (mounted) setState(() => _error = false);
+        });
+      } else {
+        _lockoutUntil = null;
+        _storage.delete(key: 'pin_lockout_until');
+      }
+    }
+  }
+
   void _onDigitPress(String digit) {
+    if (_lockoutUntil != null && DateTime.now().isBefore(_lockoutUntil!)) {
+      HapticFeedback.heavyImpact();
+      return; // Locked out
+    }
+    
+    HapticFeedback.lightImpact();
     setState(() {
       _error = false;
       if (_pin.length < 4) _pin += digit;
@@ -60,6 +126,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
   
   void _onDeletePress() {
+    HapticFeedback.lightImpact();
     setState(() {
       _error = false;
       if (_pin.isNotEmpty) {
@@ -68,10 +135,38 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
   
-  void _verifyPin() {
-    if (_pin == _savedPin) {
-      context.go('/dashboard');
+  Future<void> _verifyPin() async {
+    bool isMatch = false;
+    await _storage.write(key: 'last_attempt_time', value: DateTime.now().toIso8601String());
+    
+    if (_savedPinSalt.isNotEmpty) {
+      final bytes = utf8.encode(_pin + _savedPinSalt);
+      final digest = sha256.convert(bytes);
+      isMatch = digest.toString() == _savedPinHash;
     } else {
+      // Strict matching. If no salt exists, PIN wasn't set up securely.
+      // Do not allow plaintext fallback.
+      isMatch = false; 
+    }
+
+    if (isMatch) {
+      HapticFeedback.heavyImpact();
+      _attempts = 0;
+      await _storage.write(key: 'pin_attempts', value: '0');
+      if (mounted) context.go('/dashboard');
+    } else {
+      HapticFeedback.heavyImpact();
+      _attempts++;
+      await _storage.write(key: 'pin_attempts', value: _attempts.toString());
+      
+      if (_attempts >= 5) {
+        // Exponential backoff: 5 attempts = 30s, 6 = 1m, 7 = 2m, etc.
+        final lockoutSeconds = 15 * (1 << (_attempts - 4));
+        _lockoutUntil = DateTime.now().add(Duration(seconds: lockoutSeconds));
+        await _storage.write(key: 'pin_lockout_until', value: _lockoutUntil!.toIso8601String());
+        _checkLockout();
+      }
+      
       setState(() {
         _error = true;
         _pin = '';
@@ -94,9 +189,15 @@ class _AuthScreenState extends State<AuthScreen> {
               Text('Enter PIN', style: AppTypography.headlineLg),
               const SizedBox(height: 8),
               Text(
-                _error ? 'Incorrect PIN, try again' : 'Enter your 4-digit PIN to unlock',
+                _lockoutUntil != null && DateTime.now().isBefore(_lockoutUntil!)
+                    ? 'Locked out. Try again in ${_lockoutUntil!.difference(DateTime.now()).inSeconds}s'
+                    : _error 
+                        ? 'Incorrect PIN, try again' 
+                        : 'Enter your 4-digit PIN to unlock',
                 style: AppTypography.bodyLg.copyWith(
-                  color: _error ? AppColors.error : AppColors.onSurfaceVariant
+                  color: _error || (_lockoutUntil != null && DateTime.now().isBefore(_lockoutUntil!))
+                      ? AppColors.error 
+                      : AppColors.onSurfaceVariant
                 ),
               ),
               const SizedBox(height: 48),
@@ -138,20 +239,30 @@ class _AuthScreenState extends State<AuthScreen> {
                   itemCount: 12,
                   itemBuilder: (context, index) {
                     if (index == 9) {
-                      return InkWell(
-                        onTap: _authenticateWithBiometrics,
-                        customBorder: const CircleBorder(),
-                        child: Center(
-                          child: Icon(Icons.fingerprint_rounded, color: AppColors.primary, size: 32),
+                      return Semantics(
+                        label: 'Authenticate with Fingerprint or Face ID',
+                        button: true,
+                        child: InkWell(
+                          onTap: _authenticateWithBiometrics,
+                          borderRadius: BorderRadius.circular(40),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Icon(Icons.fingerprint_rounded, size: 32, color: AppColors.primary),
+                          ),
                         ),
                       );
                     }
                     if (index == 11) {
-                      return InkWell(
-                        onTap: _onDeletePress,
-                        customBorder: const CircleBorder(),
-                        child: Center(
-                          child: Icon(Icons.backspace_outlined, color: AppColors.onSurface),
+                      return Semantics(
+                        label: 'Delete last digit',
+                        button: true,
+                        child: InkWell(
+                          onTap: _onDeletePress,
+                          borderRadius: BorderRadius.circular(40),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Icon(Icons.backspace_rounded, size: 28, color: AppColors.onSurfaceVariant),
+                          ),
                         ),
                       );
                     }

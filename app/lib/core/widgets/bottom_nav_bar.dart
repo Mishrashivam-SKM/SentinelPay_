@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -29,7 +30,7 @@ class BottomNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(context, 0, Icons.home_rounded, 'Home', '/dashboard'),
-              _buildNavItem(context, 1, Icons.qr_code_scanner_rounded, 'Scan', '/scan'),
+              _buildNavItem(context, 1, Icons.warning_rounded, 'Alerts', '/scam_alerts'),
               _buildNavItem(context, 2, Icons.history_rounded, 'History', '/history'),
               _buildNavItem(context, 3, Icons.settings_rounded, 'Settings', '/settings'),
             ],
@@ -59,7 +60,7 @@ class BottomNavBar extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryContainer.withOpacity(0.2) : Colors.transparent,
+                color: isSelected ? AppColors.primaryContainer.withValues(alpha: 0.2) : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: color, size: 24),

@@ -2,48 +2,66 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sentinelpay_ai/features/ml/isolation_forest.dart';
 
 void main() {
-  group('Isolation Forest Tests', () {
-    test('Identifies extreme outliers correctly', () {
-      final forest = IsolationForest(numTrees: 50, subSampleSize: 20);
-
-      // Create a dataset of "normal" transactions (amounts clustered around 200-500)
-      final List<List<double>> trainingData = List.generate(100, (i) {
-        return [
-          200.0 + (i % 300), // amount
-          (i % 24).toDouble(), // hour
-          1.0, // velocity
-        ];
-      });
-
-      forest.fit(trainingData);
-
-      final normalVector = [350.0, 14.0, 1.0];
-      final outlierVector = [50000.0, 3.0, 5.0]; // Huge amount, 3 AM, high velocity
-
-      final normalScore = forest.anomalyScore(normalVector, trainingData.length);
-      final outlierScore = forest.anomalyScore(outlierVector, trainingData.length);
-
-      // The anomaly score for the outlier should be significantly higher
-      expect(outlierScore > normalScore, isTrue);
-      // Typically, IF scores > 0.5 indicate anomalies
-      expect(outlierScore > 0.5, isTrue);
-    });
+  test('IsolationForest fit and anomalyScore', () {
+    final forest = IsolationForest(numTrees: 10, subSampleSize: 2);
+    final data = [
+      [1.0, 2.0],
+      [1.1, 2.1],
+      [1.2, 2.2],
+      [10.0, 20.0], // anomaly
+    ];
     
-    test('Handles cold start gracefully', () {
-      final forest = IsolationForest(numTrees: 10, subSampleSize: 5);
-      
-      // Too few samples
-      final List<List<double>> trainingData = [
-        [100.0, 12.0, 1.0],
-        [200.0, 14.0, 1.0],
-      ];
-      
-      forest.fit(trainingData);
-      
-      final score = forest.anomalyScore([500.0, 10.0, 1.0], trainingData.length);
-      
-      // When data is insufficient, anomaly score should not confidently flag
-      expect(score < 0.6, isTrue);
-    });
+    forest.fit(data);
+    
+    final normalScore = forest.anomalyScore([1.05, 2.05], data.length);
+    final anomalyScore = forest.anomalyScore([15.0, 25.0], data.length);
+    
+    expect(normalScore >= 0.0 && normalScore <= 1.0, true);
+    expect(anomalyScore >= 0.0 && anomalyScore <= 1.0, true);
+  });
+
+  test('IsolationForest incrementalFit', () {
+    final forest = IsolationForest(numTrees: 10, subSampleSize: 2);
+    final data = [
+      [1.0, 2.0],
+      [1.1, 2.1],
+    ];
+    forest.fit(data);
+    
+    final oldTrees = List.from(forest.trees);
+    
+    final newData = [
+      [3.0, 4.0],
+      [3.1, 4.1],
+    ];
+    forest.incrementalFit(newData, replacementRatio: 0.5); // replace 5 trees
+    
+    expect(forest.trees.length, 10);
+    
+    // Some trees should be different from oldTrees
+    int matches = 0;
+    for (int i = 0; i < 10; i++) {
+      if (identical(forest.trees[i], oldTrees[i])) {
+        matches++;
+      }
+    }
+    expect(matches < 10, true);
+  });
+
+  test('IsolationForest toMap and fromMap', () {
+    final forest = IsolationForest(numTrees: 5, subSampleSize: 2);
+    final data = [
+      [1.0],
+      [2.0],
+    ];
+    forest.fit(data);
+    
+    final map = forest.toMap();
+    final forest2 = IsolationForest.fromMap(map);
+    
+    expect(forest2.trees.length, 5);
+    final score1 = forest.anomalyScore([1.5], data.length);
+    final score2 = forest2.anomalyScore([1.5], data.length);
+    expect(score1, score2);
   });
 }

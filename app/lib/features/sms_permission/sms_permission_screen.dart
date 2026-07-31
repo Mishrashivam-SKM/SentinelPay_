@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,9 +16,14 @@ class SmsPermissionScreen extends StatelessWidget {
       if (status.isGranted) {
         context.go('/parse_progress');
       } else {
-        // Even if denied, we proceed to parse_progress but the service will
-        // detect no permissions and gracefully fallback or skip
-        context.go('/parse_progress');
+        // Permission denied, cleanly fallback to demo mode
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('SMS access denied. Running in Demo Mode.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        context.go('/mode_choice');
       }
     }
   }
@@ -38,7 +44,7 @@ class SmsPermissionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryContainer.withOpacity(0.1),
+                    color: AppColors.primaryContainer.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(Icons.sms_rounded, color: AppColors.primary, size: 48),
@@ -106,7 +112,15 @@ class SmsPermissionScreen extends StatelessWidget {
                 
                 Center(
                   child: TextButton(
-                    onPressed: () => context.go('/parse_progress'),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Running in Demo Mode.'),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                      context.go('/mode_choice');
+                    },
                     child: Text(
                       'Not now (Use Demo Mode)',
                       style: AppTypography.bodyLg.copyWith(color: AppColors.onSurfaceVariant),

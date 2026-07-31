@@ -18,9 +18,13 @@ dependencies:
   go_router: ^14.8.1
 
   # Database
-  sqflite: ^2.4.2
+  sqflite_sqlcipher: ^3.1.0
   path_provider: ^2.1.5
   path: ^1.9.1
+  
+  # L10n
+  flutter_localizations:
+    sdk: flutter
 
   # Typography
   google_fonts: ^6.2.1
@@ -49,6 +53,8 @@ dependencies:
   flutter_secure_storage: ^10.3.1
   local_auth: ^3.0.2
   supabase_flutter: ^2.16.0
+  crypto: ^3.0.7
+  workmanager: ^0.9.0+3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -57,9 +63,13 @@ dev_dependencies:
   riverpod_generator: ^2.6.3
   integration_test:
     sdk: flutter
+  mockito: ^5.4.6
+  sqflite_common_ffi: ^2.4.2
 
 flutter:
+  generate: true
   uses-material-design: true
 
   assets:
     - assets/images/
+    - assets/fonts/

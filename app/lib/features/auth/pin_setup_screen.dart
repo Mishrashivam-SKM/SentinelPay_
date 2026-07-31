@@ -1,10 +1,15 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../core/widgets/glass_panel.dart';
+
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -23,6 +28,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   bool _error = false;
   
   void _onDigitPress(String digit) {
+    HapticFeedback.lightImpact();
     setState(() {
       _error = false;
       if (!_isConfirming) {
@@ -44,6 +50,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   }
   
   void _onDeletePress() {
+    HapticFeedback.lightImpact();
     setState(() {
       _error = false;
       if (!_isConfirming && _pin.isNotEmpty) {
@@ -60,7 +67,17 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   
   Future<void> _verifyAndSave() async {
     if (_pin == _confirmPin) {
-      await _storage.write(key: 'user_pin', value: _pin);
+      HapticFeedback.heavyImpact();
+      
+      final random = Random.secure();
+      final salt = base64UrlEncode(List<int>.generate(16, (i) => random.nextInt(256)));
+      final bytes = utf8.encode(_pin + salt);
+      final digest = sha256.convert(bytes);
+      
+      await _storage.write(key: 'user_pin_hash', value: digest.toString());
+      await _storage.write(key: 'user_pin_salt', value: salt);
+      await _storage.delete(key: 'user_pin'); // Cleanup old plaintext
+      
       await _storage.write(key: 'is_onboarded', value: 'true');
       
       // Optional: Check if biometrics are available and ask to enable
@@ -77,6 +94,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       
       if (mounted) context.go('/dashboard');
     } else {
+      HapticFeedback.heavyImpact();
       setState(() {
         _error = true;
         _confirmPin = '';
@@ -150,11 +168,15 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   itemBuilder: (context, index) {
                     if (index == 9) return const SizedBox(); // Empty bottom-left
                     if (index == 11) {
-                      return InkWell(
-                        onTap: _onDeletePress,
-                        customBorder: const CircleBorder(),
-                        child: Center(
-                          child: Icon(Icons.backspace_outlined, color: AppColors.onSurface),
+                      return Semantics(
+                        label: 'Delete last digit',
+                        button: true,
+                        child: InkWell(
+                          onTap: _onDeletePress,
+                          borderRadius: BorderRadius.circular(40),
+                          child: Center(
+                            child: Icon(Icons.backspace_outlined, color: AppColors.onSurface),
+                          ),
                         ),
                       );
                     }

@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
@@ -41,17 +42,7 @@ class ModeChoiceScreen extends StatelessWidget {
                 onTap: () => context.go('/pin_setup'),
               ),
               
-              const SizedBox(height: 24),
-              
-              // Experience Demo Mode
-              _buildChoiceCard(
-                context,
-                title: 'Experience Sentinel AI',
-                description: 'Demo mode. Scan simulated fraud QR codes to see how the AI works without real payments.',
-                icon: Icons.science_outlined,
-                isPrimary: false,
-                onTap: () => context.go('/pin_setup'),
-              ),
+              // Experience Demo Mode removed for V1 launch (P1-07)
             ],
           ),
         ),
@@ -75,7 +66,7 @@ class ModeChoiceScreen extends StatelessWidget {
           color: isPrimary ? AppColors.surfaceContainerHigh : AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isPrimary ? AppColors.primary.withOpacity(0.5) : AppColors.outlineVariant,
+            color: isPrimary ? AppColors.primary.withValues(alpha: 0.5) : AppColors.outlineVariant,
             width: isPrimary ? 2 : 1,
           ),
           boxShadow: isPrimary ? AppDecorations.aiGlow : null,
@@ -86,7 +77,7 @@ class ModeChoiceScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isPrimary ? AppColors.primaryContainer.withOpacity(0.3) : AppColors.surfaceContainerHigh,
+                color: isPrimary ? AppColors.primaryContainer.withValues(alpha: 0.3) : AppColors.surfaceContainerHigh,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: isPrimary ? AppColors.primary : AppColors.onSurface, size: 32),

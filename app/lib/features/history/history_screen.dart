@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../core/widgets/risk_verdict_badge.dart';
 import '../../core/data/models/risk_assessment.dart';
 import '../../core/data/models/parsed_transaction.dart';
 import '../../core/data/database/transaction_dao.dart';
+import '../../core/widgets/empty_state.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -17,6 +19,52 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   final TransactionDao _dao = TransactionDao();
+  final ScrollController _scrollController = ScrollController();
+  final List<ParsedTransaction> _transactions = [];
+  bool _isLoading = true;
+  bool _hasMore = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTransactions();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoading && _hasMore) {
+      _fetchTransactions();
+    }
+  }
+
+  Future<void> _fetchTransactions() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+    DateTime? lastTimestamp;
+    String? lastId;
+    if (_transactions.isNotEmpty) {
+      final lastTx = _transactions.last;
+      lastTimestamp = lastTx.timestamp;
+      lastId = lastTx.id;
+    }
+
+    final newTxs = await _dao.getTransactionsCursor(lastTimestamp, lastId, 20);
+    if (!mounted) return;
+    
+    setState(() {
+      _transactions.addAll(newTxs);
+      _isLoading = false;
+      if (newTxs.length < 20) {
+        _hasMore = false;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,57 +75,66 @@ class _HistoryScreenState extends State<HistoryScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list_rounded, color: AppColors.onSurface),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Filtering coming in V2')));
+            },
           ),
         ],
       ),
-      body: FutureBuilder<List<ParsedTransaction>>(
-        future: _dao.getAllTransactions(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text('No transactions found.', style: AppTypography.bodyLg),
-            );
-          }
-
-          final transactions = snapshot.data!.reversed.toList(); // Newest first
-
-          return ListView.separated(
-            padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
-            itemCount: transactions.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final tx = transactions[index];
-              final time = '${tx.timestamp.hour.toString().padLeft(2, '0')}:${tx.timestamp.minute.toString().padLeft(2, '0')}';
-              
-              // Simplistic mapping for now since historical SMS doesn't have an exact risk verdict.
-              // In production we would save the risk assessment along with the transaction.
-              RiskVerdict dummyVerdict = RiskVerdict.safe;
-              if (tx.amount > 50000) dummyVerdict = RiskVerdict.caution; // Example threshold
-              
-              return _buildHistoryItem(
-                context, 
-                tx.payeeName ?? 'Unknown', 
-                time, 
-                tx.amount.toStringAsFixed(0), 
-                dummyVerdict, 
-                Icons.swap_horiz_rounded
-              );
-            },
-          );
-        },
-      ),
+      body: _transactions.isEmpty && _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _transactions.isEmpty
+              ? const EmptyState(
+                  title: 'No Transactions',
+                  message: 'Your payment history will appear here once you make your first secure payment.',
+                  icon: Icons.history_rounded,
+                )
+              : ListView.separated(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
+                  itemCount: _transactions.length + (_hasMore ? 1 : 0),
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    if (index == _transactions.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    final tx = _transactions[index];
+                    final time = '${tx.timestamp.hour.toString().padLeft(2, '0')}:${tx.timestamp.minute.toString().padLeft(2, '0')}';
+                    
+                    // Map the saved string verdict back to the enum, default to safe if null
+                    RiskVerdict parsedVerdict = RiskVerdict.safe;
+                    if (tx.verdict != null) {
+                      try {
+                        parsedVerdict = RiskVerdict.values.byName(tx.verdict!);
+                      } catch (_) {
+                        // Fallback to safe if parsing fails
+                      }
+                    }
+                    
+                    return _buildHistoryItem(
+                      context, 
+                      tx,
+                      tx.payeeName ?? 'Unknown', 
+                      time, 
+                      tx.amount.toStringAsFixed(0), 
+                      parsedVerdict, 
+                      Icons.swap_horiz_rounded
+                    );
+                  },
+                ),
       extendBody: true,
       bottomNavigationBar: const BottomNavBar(currentIndex: 2),
     );
   }
 
-  Widget _buildHistoryItem(BuildContext context, String name, String time, String amount, RiskVerdict verdict, IconData icon) {
+  Widget _buildHistoryItem(BuildContext context, ParsedTransaction tx, String name, String time, String amount, RiskVerdict verdict, IconData icon) {
     return GestureDetector(
-      onTap: () => context.go('/transaction_detail'),
+      onTap: () => context.push('/transaction_detail', extra: tx),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

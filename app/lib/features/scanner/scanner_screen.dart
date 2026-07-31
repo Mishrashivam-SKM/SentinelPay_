@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,9 +10,10 @@ import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/utils/upi_parser.dart';
 import '../../core/providers/risk_provider.dart';
 import '../../core/data/database/transaction_dao.dart';
+import '../../core/data/database/blocklist_dao.dart';
+import '../../core/data/database/trustlist_dao.dart';
+import '../../core/data/models/blocked_entity.dart';
 import '../../core/data/models/risk_assessment.dart';
-import '../../core/data/models/parsed_transaction.dart';
-import 'dart:async';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -54,58 +56,89 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with SingleTicker
     
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isNotEmpty) {
-      final String? code = barcodes.first.rawValue;
+      // Prioritize valid UPI barcodes in case of multiple QRs (e.g., a menu and a payment QR)
+      Barcode? targetBarcode;
+      for (var b in barcodes) {
+        if (b.rawValue != null && UpiParser(b.rawValue!).isValidUpiUri) {
+          targetBarcode = b;
+          break;
+        }
+      }
+      targetBarcode ??= barcodes.first;
+      
+      final String? code = targetBarcode.rawValue;
       if (code != null) {
         setState(() => _isProcessing = true);
         
-        final parser = UpiParser(code);
-        
-        // Non-payment QR detection (URL, text, etc)
-        if (!parser.isValidUpiUri) {
-          final engine = ref.read(riskFusionEngineProvider);
-          // Manually create a block assessment for invalid QR
-          final assessment = RiskAssessment(
-            transactionId: DateTime.now().millisecondsSinceEpoch.toString(),
-            verdict: RiskVerdict.block,
-            confidenceScore: 1.0,
-            evidence: [
-              EvidenceItem(
-                key: 'invalid_qr',
-                label: 'Format',
-                detail: 'This is not a valid UPI payment code. It may link to a malicious website or app.',
-                isPositive: false,
-              )
-            ],
-            explanationTitle: 'Invalid Payment QR Code',
-            explanationBody: 'Scanning this code will not initiate a secure UPI payment.',
-          );
+        try {
+          final parser = UpiParser(code);
           
-          if (mounted) {
-            context.go('/analysis', extra: {
-              'assessment': assessment,
-              'upiUri': code,
-            });
+          // Non-payment QR detection (URL, text, etc)
+          if (!parser.isValidUpiUri) {
+
+            // Manually create a block assessment for invalid QR
+            final assessment = RiskAssessment(
+              transactionId: DateTime.now().millisecondsSinceEpoch.toString(),
+              verdict: RiskVerdict.block,
+              confidenceScore: 1.0,
+              evidence: [
+                EvidenceItem(
+                  key: 'invalid_qr',
+                  label: 'Format',
+                  detail: 'This is not a valid UPI payment code. It may link to a malicious website or app.',
+                  isPositive: false,
+                )
+              ],
+              explanationTitle: 'Invalid Payment QR Code',
+              explanationBody: 'Scanning this code will not initiate a secure UPI payment.',
+            );
+            
+            if (mounted) {
+              context.go('/analysis', extra: {
+                'assessment': assessment,
+                'upiUri': code,
+              });
+            }
+            return;
           }
-          return;
-        }
 
-        // Live processing
-        final engine = ref.read(riskFusionEngineProvider);
-        final history = await TransactionDao().getAllTransactions();
-        
-        final assessment = engine.assessLiveIntent(
-          parser.payeeVpa ?? 'Unknown',
-          parser.payeeName ?? 'Unknown Entity',
-          parser.amount ?? 0.0,
-          history,
-        );
+          // Live processing
+          // Train ML model on boot with historical data in a background isolate
+          if (!mounted) return;
+          final engine = ref.read(riskFusionEngineProvider);
+          final history = await TransactionDao().getRecentTransactions(200);
+          
+          final vpa = parser.payeeVpa ?? 'Unknown';
+          final isBlocked = await BlocklistDao().isBlocked(vpa, EntityType.upi);
+          final isTrusted = await TrustlistDao().isTrusted(vpa, EntityType.upi);
+          
+          final assessment = await engine.assessLiveIntent(
+            payeeVpa: vpa,
+            payeeName: parser.payeeName ?? 'Unknown Entity',
+            amount: parser.amount ?? 0.0,
+            history: history,
+            isUserBlocked: isBlocked,
+            isUserTrusted: isTrusted,
+          );
 
-        if (mounted) {
-           // We pass both the assessment and the original URI so handoff can launch it
-           context.go('/analysis', extra: {
-             'assessment': assessment,
-             'upiUri': code,
-           });
+          if (mounted) {
+             // We pass both the assessment and the original URI so handoff can launch it
+             context.go('/analysis', extra: {
+               'assessment': assessment,
+               'upiUri': code,
+             });
+          }
+        } catch (e) {
+          debugPrint('Error processing QR: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error processing QR: $e'), backgroundColor: AppColors.error),
+            );
+          }
+        } finally {
+          if (mounted) {
+            setState(() => _isProcessing = false);
+          }
         }
       }
     }
@@ -197,7 +230,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with SingleTicker
                     }),
                     const SizedBox(width: 24),
                     _buildActionButton(Icons.image_outlined, () {
-                      // Select from gallery
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Gallery import coming soon')),
+                      );
                     }),
                   ],
                 ),
@@ -206,10 +241,69 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with SingleTicker
                 
                 // Manual Entry
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        final textController = TextEditingController();
+                        return AlertDialog(
+                          title: const Text('Enter UPI ID'),
+                          content: TextField(
+                            controller: textController,
+                            decoration: const InputDecoration(hintText: 'e.g. name@bank'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final vpa = textController.text.trim();
+                                if (vpa.isNotEmpty) {
+                                  Navigator.pop(context);
+                                  
+                                  setState(() => _isProcessing = true);
+                                  try {
+                                    final engine = ref.read(riskFusionEngineProvider);
+                                    final history = await TransactionDao().getRecentTransactions(200);
+                                    final isBlocked = await BlocklistDao().isBlocked(vpa, EntityType.upi);
+                                    final isTrusted = await TrustlistDao().isTrusted(vpa, EntityType.upi);
+                                    
+                                    final assessment = await engine.assessLiveIntent(
+                                      payeeVpa: vpa,
+                                      payeeName: 'Manual Entry',
+                                      amount: 0.0,
+                                      history: history,
+                                      isUserBlocked: isBlocked,
+                                      isUserTrusted: isTrusted,
+                                    );
+
+                                    if (mounted) {
+                                       context.go('/analysis', extra: {
+                                         'assessment': assessment,
+                                         'upiUri': 'upi://pay?pa=$vpa&pn=Manual Entry',
+                                       });
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                                    }
+                                  } finally {
+                                    if (mounted) setState(() => _isProcessing = false);
+                                  }
+                                }
+                              },
+                              child: const Text('Proceed'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                    side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
@@ -335,7 +429,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with SingleTicker
                       color: AppColors.primary,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.5),
+                          color: AppColors.primary.withValues(alpha: 0.5),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),

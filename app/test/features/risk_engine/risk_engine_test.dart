@@ -4,14 +4,29 @@ import 'package:sentinelpay_ai/core/data/models/risk_assessment.dart';
 import 'package:sentinelpay_ai/features/risk_engine/deterministic_intelligence.dart';
 import 'package:sentinelpay_ai/features/risk_engine/statistical_intelligence.dart';
 import 'package:sentinelpay_ai/features/risk_engine/confidence_engine.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sentinelpay_ai/core/data/database/database_helper.dart';
 
 void main() {
+  setUpAll(() async {
+    sqfliteFfiInit();
+    final db = await databaseFactoryFfi.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: 4,
+        onCreate: DatabaseHelper.onCreate,
+        onUpgrade: DatabaseHelper.onUpgrade,
+      ),
+    );
+    DatabaseHelper.setDatabaseForTest(db);
+  });
+
   group('Fraud Intelligence Engine Tests', () {
 
     group('Deterministic Intelligence', () {
       final engine = DeterministicIntelligence();
 
-      test('Flags known scam patterns', () {
+      test('Flags known scam patterns', () async {
         final tx = ParsedTransaction(
           amount: 5000,
           direction: TransactionDirection.debit,
@@ -21,11 +36,11 @@ void main() {
           sourceBank: 'HDFC',
           source: 'live',
         );
-        final score = engine.scoreDeterministic(tx);
+        final score = await engine.scoreDeterministic(tx);
         expect(score, 1.0);
       });
 
-      test('Passes normal transactions', () {
+      test('Passes normal transactions', () async {
         final tx = ParsedTransaction(
           amount: 450,
           direction: TransactionDirection.debit,
@@ -35,7 +50,7 @@ void main() {
           sourceBank: 'HDFC',
           source: 'live',
         );
-        final score = engine.scoreDeterministic(tx);
+        final score = await engine.scoreDeterministic(tx);
         expect(score, 0.0);
       });
     });
@@ -82,7 +97,7 @@ void main() {
           finalScore: 0.1,
           isModelTrained: true,
         );
-        expect(confidence > 0.8, isTrue); 
+        expect(confidence >= 0.8, isTrue); 
       });
     });
   });

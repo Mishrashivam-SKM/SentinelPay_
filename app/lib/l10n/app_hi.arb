@@ -1,0 +1,16 @@
+{
+  "@@locale": "hi",
+  "appTitle": "सेंटिनलपे एआई",
+  "dashboardTitle": "सुरक्षा डैशबोर्ड",
+  "secureVault": "सुरक्षित तिजोरी",
+  "scamAlerts": "स्कैम अलर्ट",
+  "paymentAnalysis": "भुगतान विश्लेषण",
+  "aiVerdictBreakdown": "एआई निर्णय विवरण",
+  "paySecurely": "सुरक्षित रूप से भुगतान करें",
+  "returnToDashboard": "डैशबोर्ड पर वापस जाएं",
+  "blockPayee": "प्राप्तकर्ता को ब्लॉक करें",
+  "payeeBlockedSuccess": "प्राप्तकर्ता को सफलतापूर्वक ब्लॉक किया गया।",
+  "addedToTrustlist": "{payee} को ट्रस्टलिस्ट में जोड़ा गया",
+  "proceedAnyway": "फिर भी आगे बढ़ें (मुझे इस पर भरोसा है)",
+  "cancelPayment": "भुगतान रद्द करें"
+}

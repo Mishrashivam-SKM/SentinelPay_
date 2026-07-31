@@ -13,10 +13,9 @@ class BehaviourIntelligence {
 
     List<List<double>> trainingData = [];
     for (int i = 0; i < history.length; i++) {
-      // Compute features for history[i] using the context of history up to that point
-      // For simplicity in this implementation, we compute relative to the whole window
-      // A more strictly correct way is to only use past data.
-      List<ParsedTransaction> pastContext = history.sublist(i); // Assuming sorted DESC
+      // history is sorted DESC (newest at index 0).
+      // pastContext must only contain transactions strictly OLDER than history[i].
+      List<ParsedTransaction> pastContext = (i + 1 < history.length) ? history.sublist(i + 1) : [];
       TransactionFeatureVector vec = FeatureComputation.computeFeatures(history[i], pastContext);
       trainingData.add(vec.toVector());
     }
@@ -26,25 +25,59 @@ class BehaviourIntelligence {
     _trainingSampleCount = history.length;
   }
 
+  void incrementalTrain(List<ParsedTransaction> newTransactions, List<ParsedTransaction> history) {
+    if (newTransactions.isEmpty) return;
+    
+    List<List<double>> newTrainingData = [];
+    for (int i = 0; i < newTransactions.length; i++) {
+      // For each new transaction, its "pastContext" is the transactions older than it.
+      // Since newTransactions is sorted DESC, the past context for newTransactions[i] is 
+      // newTransactions.sublist(i + 1) + history
+      List<ParsedTransaction> pastContext = [
+        ...newTransactions.sublist(i + 1),
+        ...history
+      ];
+      TransactionFeatureVector vec = FeatureComputation.computeFeatures(newTransactions[i], pastContext);
+      newTrainingData.add(vec.toVector());
+    }
+
+    _forest.incrementalFit(newTrainingData);
+    _trainingSampleCount += newTransactions.length;
+    _isTrained = true;
+  }
+
   double scoreBehaviour(ParsedTransaction current, List<ParsedTransaction> history) {
-    if (!_isTrained || _trainingSampleCount < 15) {
-      // If we don't have enough history to train the model, we can't trust the score.
+    if (!_isTrained) {
+      // If we literally have 0 history to train the model, we can't trust the score.
       // But we CAN check if the payee exists in whatever limited history we have.
       bool payeeExists = history.any((tx) => tx.payeeIdentifier == current.payeeIdentifier);
       return payeeExists ? 0.3 : 0.7; // 0.7 = Warning zone for unknown payees
     }
 
-    // Strict Unknown Payee Penalty for ML model
-    bool payeeExists = history.any((tx) => tx.payeeIdentifier == current.payeeIdentifier);
-    if (!payeeExists) {
-      // If the model has NEVER seen this payee in the rolling 200 transaction window,
-      // it is inherently risky. We artificially boost the anomaly score.
-      return 0.8; // High Warning / Danger threshold
-    }
+    // Removed the strict Unknown Payee Penalty.
+    // We let the ML model natively score it based on the extracted features.
 
     TransactionFeatureVector vec = FeatureComputation.computeFeatures(current, history);
     return _forest.anomalyScore(vec.toVector(), _trainingSampleCount);
   }
   
   bool get isTrained => _isTrained;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'forest': _forest.toMap(),
+      'isTrained': _isTrained,
+      'trainingSampleCount': _trainingSampleCount,
+    };
+  }
+
+  void loadFromMap(Map<String, dynamic> map) {
+    if (map['isTrained'] == true) {
+      final forestMap = map['forest'] as Map<String, dynamic>;
+      final newForest = IsolationForest.fromMap(forestMap);
+      _forest.trees = newForest.trees; // Copy the trees over
+      _isTrained = true;
+      _trainingSampleCount = map['trainingSampleCount'] as int;
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'dart:isolate';
 import '../../core/data/database/transaction_dao.dart';
 import 'behaviour_intelligence.dart';
 
@@ -16,17 +18,46 @@ class RetrainService {
     
     // Retrain trigger: Every 10 new transactions OR every 24 hours
     if (_newTransactionsSinceLastTrain >= 10 || timeSinceLast.inHours >= 24) {
-      await forceRetrain();
+      if (_behaviourIntelligence.isTrained) {
+        await incrementalRetrain();
+      } else {
+        await forceRetrain();
+      }
     }
   }
 
   Future<void> forceRetrain() async {
     // Fetch rolling window (most recent 200)
     final history = await _transactionDao.getRecentTransactions(200);
-    _behaviourIntelligence.train(history);
+    
+    final serializedModel = await Isolate.run(() {
+       final tempBI = BehaviourIntelligence();
+       tempBI.train(history);
+       return tempBI.toMap();
+    });
+    
+    _behaviourIntelligence.loadFromMap(serializedModel);
     
     _newTransactionsSinceLastTrain = 0;
     _lastTrainTime = DateTime.now();
-    print('Model retrained on ${history.length} samples.');
+    debugPrint('Model retrained on ${history.length} samples.');
+  }
+  Future<void> incrementalRetrain() async {
+    // Fetch recent new transactions to incrementally train
+    final newTx = await _transactionDao.getRecentTransactions(_newTransactionsSinceLastTrain);
+    final history = await _transactionDao.getRecentTransactions(200);
+    
+    final serializedModel = await Isolate.run(() {
+      final tempBI = BehaviourIntelligence();
+      // Load current state
+      tempBI.loadFromMap(_behaviourIntelligence.toMap());
+      tempBI.incrementalTrain(newTx, history);
+      return tempBI.toMap();
+    });
+    
+    _behaviourIntelligence.loadFromMap(serializedModel);
+    
+    _newTransactionsSinceLastTrain = 0;
+    _lastTrainTime = DateTime.now();
   }
 }

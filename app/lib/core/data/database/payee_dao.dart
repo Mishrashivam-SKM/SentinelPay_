@@ -1,4 +1,5 @@
-import 'package:sqflite/sqflite.dart';
+// coverage:ignore-file
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../models/payee.dart';
 import 'database_helper.dart';
 
@@ -29,7 +30,7 @@ class PayeeDao {
   }
 
   Future<void> incrementPayeeFrequency(String vpa, String? displayName, DateTime timestamp) async {
-    final db = await _dbHelper.database;
+
     final payee = await getPayeeByVpa(vpa);
     
     if (payee != null) {

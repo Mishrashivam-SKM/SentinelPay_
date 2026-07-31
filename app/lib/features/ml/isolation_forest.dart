@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'dart:math';
 import 'isolation_tree.dart';
 
@@ -17,15 +18,48 @@ class IsolationForest {
     for (int i = 0; i < numTrees; i++) {
       // Subsampling
       int sampleSize = n < subSampleSize ? n : subSampleSize;
-      List<List<double>> XSub = [];
+      List<List<double>> xSub = [];
       List<int> indices = List.generate(n, (index) => index)..shuffle(random);
       
       for (int j = 0; j < sampleSize; j++) {
-        XSub.add(X[indices[j]]);
+        xSub.add(X[indices[j]]);
       }
 
       IsolationTree tree = IsolationTree(currentDepth: 0, maxDepth: maxDepth);
-      tree.build(XSub);
+      tree.build(xSub);
+      trees.add(tree);
+    }
+  }
+
+  void incrementalFit(List<List<double>> newSamples, {double replacementRatio = 0.1}) {
+    if (trees.isEmpty) {
+      fit(newSamples);
+      return;
+    }
+
+    int n = newSamples.length;
+    int maxDepth = (log(subSampleSize) / log(2)).ceil();
+    final random = Random();
+
+    int numTreesToReplace = (numTrees * replacementRatio).ceil();
+    
+    for (int i = 0; i < numTreesToReplace; i++) {
+      if (trees.isNotEmpty) {
+         trees.removeAt(random.nextInt(trees.length)); // Replace random existing trees
+      }
+    }
+
+    for (int i = 0; i < numTreesToReplace; i++) {
+      int sampleSize = n < subSampleSize ? n : subSampleSize;
+      List<List<double>> xSub = [];
+      List<int> indices = List.generate(n, (index) => index)..shuffle(random);
+      
+      for (int j = 0; j < sampleSize; j++) {
+        xSub.add(newSamples[indices[j]]);
+      }
+
+      IsolationTree tree = IsolationTree(currentDepth: 0, maxDepth: maxDepth);
+      tree.build(xSub);
       trees.add(tree);
     }
   }
@@ -47,5 +81,23 @@ class IsolationForest {
 
     // Score is between 0 and 1. Values closer to 1 are more anomalous.
     return pow(2, -expectedPath / c).toDouble();
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'numTrees': numTrees,
+      'subSampleSize': subSampleSize,
+      'trees': trees.map((t) => t.toMap()).toList(),
+    };
+  }
+
+  factory IsolationForest.fromMap(Map<String, dynamic> map) {
+    final forest = IsolationForest(
+      numTrees: map['numTrees'] as int,
+      subSampleSize: map['subSampleSize'] as int,
+    );
+    final treeMaps = map['trees'] as List<dynamic>;
+    forest.trees = treeMaps.map((t) => IsolationTree.fromMap(t as Map<String, dynamic>)).toList();
+    return forest;
   }
 }

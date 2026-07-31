@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,8 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/theme/app_decorations.dart';
-import '../../core/data/database/transaction_dao.dart';
+
+import 'dart:convert';
 import '../../core/providers/risk_provider.dart';
+import '../ml/ml_pipeline_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,10 +33,23 @@ class _SplashScreenState extends State<SplashScreen> {
     // Artificial delay for splash animation
     await Future.delayed(const Duration(seconds: 2));
     
-    // Train ML model on boot with historical data
-    final history = await TransactionDao().getAllTransactions();
+    // Train ML model on boot with historical data in a background isolate
+    if (!mounted) return;
     final bi = ProviderScope.containerOf(context, listen: false).read(behaviourIntelligenceProvider);
-    bi.train(history);
+    
+    // Try to load serialized model from background task
+    final modelJson = await _storage.read(key: 'bi_model_state');
+    if (modelJson != null) {
+      try {
+        bi.loadFromMap(jsonDecode(modelJson));
+      } catch (e) {
+        final pipeline = MlPipelineService(bi);
+        await pipeline.retrainOnLatest();
+      }
+    } else {
+      final pipeline = MlPipelineService(bi);
+      await pipeline.retrainOnLatest();
+    }
     
     final isOnboarded = await _storage.read(key: 'is_onboarded');
     
@@ -69,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),

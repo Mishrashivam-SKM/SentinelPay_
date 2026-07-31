@@ -10,11 +10,14 @@ import '../../features/auth/pin_setup_screen.dart';
 import '../../features/auth/auth_screen.dart';
 import '../../features/analysis/handoff_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
+import '../../features/dashboard/scam_alerts_screen.dart';
 import '../../features/scanner/scanner_screen.dart';
 import '../../features/analysis/analysis_screen.dart';
 import '../../features/transaction_detail/transaction_detail_screen.dart';
 import '../../features/history/history_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/settings/blocklist_screen.dart';
+import '../../features/settings/trustlist_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -54,8 +57,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/handoff',
       builder: (context, state) {
-        final uri = state.extra as String?;
-        return HandoffScreen(upiUri: uri);
+        final extra = state.extra as Map<String, dynamic>?;
+        final uri = extra?['upiUri'] as String?;
+        final verdict = extra?['verdict'] as String?;
+        return HandoffScreen(upiUri: uri, verdict: verdict);
       },
     ),
     GoRoute(
@@ -105,6 +110,24 @@ final GoRouter appRouter = GoRouter(
           return FadeTransition(opacity: animation, child: child);
         },
       ),
+    ),
+    GoRoute(
+      path: '/scam_alerts',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const ScamAlertsScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+    GoRoute(
+      path: '/blocklist',
+      builder: (context, state) => const BlocklistScreen(),
+    ),
+    GoRoute(
+      path: '/trustlist',
+      builder: (context, state) => const TrustlistScreen(),
     ),
     GoRoute(
       path: '/settings',

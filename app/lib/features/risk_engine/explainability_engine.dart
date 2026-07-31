@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import '../../../core/data/models/risk_assessment.dart';
 
 class ExplainabilityEngine {
@@ -65,6 +66,41 @@ class ExplainabilityEngine {
           key: key,
           label: 'Unusual Amount',
           detail: 'Significantly higher than average',
+          isPositive: false,
+        );
+      case 'low_confidence_warning':
+        return EvidenceItem(
+          key: key,
+          label: 'Low Model Confidence',
+          detail: 'Insufficient history to guarantee safety.',
+          isPositive: false,
+        );
+      case 'payee_details_visible':
+        return EvidenceItem(
+          key: key,
+          label: 'Verify Payee',
+          detail: 'Please confirm the merchant details carefully.',
+          isPositive: true,
+        );
+      case 'user_blocked':
+        return EvidenceItem(
+          key: key,
+          label: 'Blocked by You',
+          detail: 'You have previously blocked this payee.',
+          isPositive: false,
+        );
+      case 'trusted_by_user':
+        return EvidenceItem(
+          key: key,
+          label: 'Trusted Payee',
+          detail: 'You have marked this payee as trusted.',
+          isPositive: true,
+        );
+      case 'trusted_but_anomalous':
+        return EvidenceItem(
+          key: key,
+          label: 'Trusted, but Unusual',
+          detail: 'This is a trusted payee, but the transaction amount or frequency is highly unusual.',
           isPositive: false,
         );
       case 'insufficient_history':

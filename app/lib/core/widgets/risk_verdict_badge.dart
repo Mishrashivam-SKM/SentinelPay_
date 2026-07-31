@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -22,64 +23,48 @@ class RiskVerdictBadge extends StatelessWidget {
 
     switch (verdict) {
       case RiskVerdict.safe:
-        bgColor = AppColors.primaryContainer.withOpacity(0.2);
+        bgColor = AppColors.primaryContainer.withValues(alpha: 0.2);
         fgColor = AppColors.primary;
         text = 'SAFE';
         icon = Icons.check_circle_outline_rounded;
         break;
       case RiskVerdict.caution:
-        bgColor = AppColors.tertiaryContainer.withOpacity(0.2);
+        bgColor = AppColors.tertiaryContainer.withValues(alpha: 0.2);
         fgColor = AppColors.tertiary;
         text = 'CAUTION';
         icon = Icons.error_outline_rounded;
         break;
       case RiskVerdict.block:
-        bgColor = AppColors.errorContainer.withOpacity(0.3);
+        bgColor = AppColors.errorContainer.withValues(alpha: 0.3);
         fgColor = AppColors.error;
         text = 'HIGH RISK';
         icon = Icons.block_flipped;
         break;
     }
 
-    if (compact) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    return Semantics(
+      label: 'Risk Verdict: $text',
+      child: Container(
+        padding: compact 
+            ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4)
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: fgColor.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(compact ? 8 : 16),
+          border: Border.all(color: fgColor.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: fgColor),
+            Icon(icon, size: compact ? 12 : 18, color: fgColor),
             const SizedBox(width: 4),
             Text(
               text,
-              style: AppTypography.labelCaps.copyWith(color: fgColor, fontSize: 10),
+              style: (compact ? AppTypography.labelCaps.copyWith(fontSize: 10) : AppTypography.labelCaps)
+                  .copyWith(color: fgColor),
             ),
           ],
         ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: fgColor.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: fgColor),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: AppTypography.labelCaps.copyWith(color: fgColor),
-          ),
-        ],
       ),
     );
   }

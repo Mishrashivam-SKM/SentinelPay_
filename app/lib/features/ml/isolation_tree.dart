@@ -74,4 +74,33 @@ class IsolationTree {
     // Using Euler's constant ~0.5772156649
     return 2.0 * (log(n - 1.0) + 0.5772156649) - (2.0 * (n - 1.0) / n);
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'currentDepth': currentDepth,
+      'maxDepth': maxDepth,
+      'splitAttribute': splitAttribute,
+      'splitValue': splitValue,
+      'size': size,
+      'left': left?.toMap(),
+      'right': right?.toMap(),
+    };
+  }
+
+  factory IsolationTree.fromMap(Map<String, dynamic> map) {
+    final tree = IsolationTree(
+      currentDepth: map['currentDepth'] as int,
+      maxDepth: map['maxDepth'] as int,
+    );
+    tree.splitAttribute = map['splitAttribute'] as int;
+    tree.splitValue = map['splitValue'] as double;
+    tree.size = map['size'] as int;
+    if (map['left'] != null) {
+      tree.left = IsolationTree.fromMap(map['left'] as Map<String, dynamic>);
+    }
+    if (map['right'] != null) {
+      tree.right = IsolationTree.fromMap(map['right'] as Map<String, dynamic>);
+    }
+    return tree;
+  }
 }

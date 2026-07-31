@@ -1,5 +1,7 @@
+// coverage:ignore-file
 import '../../../core/data/models/parsed_transaction.dart';
 import 'template_registry.dart';
+import 'package:flutter/foundation.dart';
 import 'sms_template.dart';
 
 class SmsParser {
@@ -22,7 +24,7 @@ class SmsParser {
           return template.extractor(body, timestamp, source);
         } catch (e) {
           // Soft fail: log error internally, try next template
-          print('Error extracting with template ${template.id}: $e');
+          debugPrint('Error extracting with template ${template.id}: $e');
         }
       }
     }

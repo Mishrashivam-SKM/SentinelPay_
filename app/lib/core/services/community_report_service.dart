@@ -20,15 +20,8 @@ class CommunityReportService {
 
   /// Report a malicious VPA to the global community database.
   Future<void> reportVpa(String vpa, String reason) async {
-    try {
-      await _client.from('flagged_vpas').insert({
-        'vpa': vpa,
-        'reason': reason,
-        'reported_at': DateTime.now().toIso8601String(),
-      });
-      debugPrint('Successfully reported VPA to community.');
-    } catch (e) {
-      debugPrint('Failed to report VPA: $e');
-    }
+    // P0-09 Fix: Community reporting disabled for V1 to prevent abuse
+    debugPrint('Community VPA reporting is disabled for V1.');
+    return;
   }
 }

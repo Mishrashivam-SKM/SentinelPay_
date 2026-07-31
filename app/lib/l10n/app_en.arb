@@ -1,0 +1,26 @@
+{
+  "@@locale": "en",
+  "appTitle": "SentinelPay AI",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "dashboardTitle": "Security Dashboard",
+  "secureVault": "Secure Vault",
+  "scamAlerts": "Scam Alerts",
+  "paymentAnalysis": "Payment Analysis",
+  "aiVerdictBreakdown": "AI VERDICT BREAKDOWN",
+  "paySecurely": "Pay Securely",
+  "returnToDashboard": "Return to Dashboard",
+  "blockPayee": "Block Payee",
+  "payeeBlockedSuccess": "Payee blocked successfully.",
+  "addedToTrustlist": "Added {payee} to Trustlist",
+  "@addedToTrustlist": {
+    "placeholders": {
+      "payee": {
+        "type": "String"
+      }
+    }
+  },
+  "proceedAnyway": "Proceed Anyway (I trust this)",
+  "cancelPayment": "Cancel Payment"
+}

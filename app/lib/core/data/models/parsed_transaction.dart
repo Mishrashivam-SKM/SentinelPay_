@@ -12,6 +12,7 @@ class ParsedTransaction {
   final String sourceBank;
   final String? matchedTemplateId;
   final String source; // 'sms_historical' or 'live'
+  final String? verdict; // Added for RiskVerdict persistence
 
   ParsedTransaction({
     this.id,
@@ -24,6 +25,7 @@ class ParsedTransaction {
     required this.sourceBank,
     this.matchedTemplateId,
     required this.source,
+    this.verdict,
   });
 
   Map<String, dynamic> toMap() {
@@ -38,6 +40,7 @@ class ParsedTransaction {
       'source_bank': sourceBank,
       'matched_template_id': matchedTemplateId,
       'source': source,
+      'verdict': verdict,
     };
   }
 
@@ -53,6 +56,7 @@ class ParsedTransaction {
       sourceBank: map['source_bank'] ?? 'Unknown',
       matchedTemplateId: map['matched_template_id'],
       source: map['source'] ?? 'sms_historical',
+      verdict: map['verdict'],
     );
   }
 }
